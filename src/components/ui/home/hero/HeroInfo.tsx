@@ -7,12 +7,16 @@ import {
   IconButton,
   useTheme,
   useMediaQuery,
+  Tooltip,
 } from "@mui/material";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
-import AddIcon from "@mui/icons-material/Add";
+import SaveIcon from "@mui/icons-material/BookmarkBorder";
+import BookmarkIcon from "@mui/icons-material/Bookmark";
 import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
-import DownloadIcon from "@mui/icons-material/Download";
 import type { MovieDetails } from "../../../../types/movie.types";
+import { useWatchlist } from "../../../../context/WatchlistContext";
+import { useAuth } from "../../../../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 interface HeroInfoProps {
   movie: MovieDetails;
@@ -27,6 +31,28 @@ const HeroInfo: React.FC<HeroInfoProps> = ({
 }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const { isAuthenticated, openAuthDialog } = useAuth();
+  const { addToWatchlist, isInWatchlist, removeFromWatchlist } = useWatchlist();
+  const navigate = useNavigate();
+
+  const isMovieSaved = isInWatchlist(movie.id);
+
+  const handleSaveClick = () => {
+    if (!isAuthenticated) {
+      openAuthDialog("login");
+      return;
+    }
+
+    if (isMovieSaved) {
+      removeFromWatchlist(movie.id);
+    } else {
+      addToWatchlist(movie);
+    }
+  };
+
+  const handleDetailsClick = () => {
+    navigate(`/movie/${movie.id}`);
+  };
 
   return (
     <Grid
@@ -140,33 +166,39 @@ const HeroInfo: React.FC<HeroInfoProps> = ({
             disabled={!hasTrailer}
           >
             <PlayArrowIcon />
-          </IconButton>
-          <IconButton
-            sx={{
-              bgcolor: "rgba(255,255,255,0.2)",
-              color: "#fff",
-              mr: 2,
-            }}
+          </IconButton>{" "}
+          <Tooltip title="Movie details">
+            <IconButton
+              sx={{
+                bgcolor: "rgba(255,255,255,0.2)",
+                color: "#fff",
+                mr: 2,
+                "&:hover": {
+                  bgcolor: "rgba(255,255,255,0.3)",
+                },
+              }}
+              onClick={handleDetailsClick}
+            >
+              <FormatListBulletedIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip
+            title={isMovieSaved ? "Remove from watchlist" : "Add to watchlist"}
           >
-            <FormatListBulletedIcon />
-          </IconButton>
-          <IconButton
-            sx={{
-              bgcolor: "rgba(255,255,255,0.2)",
-              color: "#fff",
-              mr: 2,
-            }}
-          >
-            <AddIcon />
-          </IconButton>
-          <IconButton
-            sx={{
-              bgcolor: "rgba(255,255,255,0.2)",
-              color: "#fff",
-            }}
-          >
-            <DownloadIcon />
-          </IconButton>
+            <IconButton
+              sx={{
+                bgcolor: "rgba(255,255,255,0.2)",
+                color: "#fff",
+                mr: 2,
+                "&:hover": {
+                  bgcolor: "rgba(255,255,255,0.3)",
+                },
+              }}
+              onClick={handleSaveClick}
+            >
+              {isMovieSaved ? <BookmarkIcon color="secondary" /> : <SaveIcon />}
+            </IconButton>
+          </Tooltip>
         </Box>
       </Grid>
     </Grid>

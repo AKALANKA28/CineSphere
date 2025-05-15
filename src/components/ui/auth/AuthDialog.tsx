@@ -5,11 +5,9 @@ import {
   Box,
   Tabs,
   Tab,
-  IconButton,
   useTheme,
   useMediaQuery,
 } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
 import LoginForm from "./LoginForm";
 import RegisterForm from "./RegisterForm";
 
@@ -39,11 +37,15 @@ const TabPanel = (props: TabPanelProps) => {
 interface AuthDialogProps {
   open: boolean;
   onClose: () => void;
-  initialTab?: 'login' | 'register';
+  initialTab?: "login" | "register";
 }
 
-const AuthDialog: React.FC<AuthDialogProps> = ({ open, onClose, initialTab = 'login' }) => {
-  const [tabValue, setTabValue] = useState(initialTab === 'login' ? 0 : 1);
+const AuthDialog: React.FC<AuthDialogProps> = ({
+  open,
+  onClose,
+  initialTab = "login",
+}) => {
+  const [tabValue, setTabValue] = useState(initialTab === "login" ? 0 : 1);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -56,8 +58,8 @@ const AuthDialog: React.FC<AuthDialogProps> = ({ open, onClose, initialTab = 'lo
   };
 
   return (
-    <Dialog 
-      open={open} 
+    <Dialog
+      open={open}
       onClose={onClose}
       maxWidth="xs"
       fullWidth
@@ -65,43 +67,52 @@ const AuthDialog: React.FC<AuthDialogProps> = ({ open, onClose, initialTab = 'lo
       PaperProps={{
         style: {
           backdropFilter: "blur(4px)",
-          backgroundColor: theme.palette.mode === 'dark' 
-            ? 'rgba(30, 30, 30, 0.9)'
-            : 'rgba(255, 255, 255, 0.9)',
+          backgroundColor:
+            theme.palette.mode === "dark"
+              ? "rgba(30, 30, 30, 0.9)"
+              : "rgba(255, 255, 255, 0.9)",
           borderRadius: isMobile ? 0 : 8,
           overflowY: "auto",
         },
       }}
       sx={{
         backdropFilter: "blur(8px)",
-        '& .MuiDialog-paper': {
-          boxShadow: '0px 8px 24px rgba(0, 0, 0, 0.15)',
-        }
+        "& .MuiDialog-paper": {
+          boxShadow: "0px 8px 24px rgba(0, 0, 0, 0.15)",
+        },
       }}
     >
-      <Box sx={{ display: 'flex', justifyContent: 'flex-end', p: 1 }}>
-        <IconButton edge="end" color="inherit" onClick={onClose} aria-label="close">
-          <CloseIcon />
-        </IconButton>
-      </Box>
-      
+      {" "}
       <Tabs
         value={tabValue}
         onChange={handleChange}
         variant="fullWidth"
-        indicatorColor="primary"
-        textColor="primary"
-        sx={{ mb: 2, px: 2 }}
+        indicatorColor="secondary"
+        textColor="secondary"
+        sx={{
+          mb: 2,
+          px: 2,
+          "& .MuiTab-root": {
+            color: "text.secondary",
+            "&.Mui-selected": {
+              color: "secondary.main",
+              fontWeight: "bold",
+            },
+          },
+          "& .MuiTabs-indicator": {
+            backgroundColor: "secondary.main",
+            height: 3,
+          },
+        }}
       >
         <Tab label="Login" />
         <Tab label="Register" />
       </Tabs>
-      
       <DialogContent sx={{ p: { xs: 2, sm: 3 } }}>
         <TabPanel value={tabValue} index={0}>
           <LoginForm onSuccess={handleSuccessfulAuth} />
         </TabPanel>
-        
+
         <TabPanel value={tabValue} index={1}>
           <RegisterForm onSuccess={handleSuccessfulAuth} />
         </TabPanel>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import type { ReactNode } from "react";
 import {
   Box,
@@ -15,6 +15,7 @@ import BookmarkIcon from "@mui/icons-material/Bookmark";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
+import { useWatchlist } from "../../../context/WatchlistContext";
 import { getImageUrl, formatRuntime } from "../../../utils/formatters";
 import type { MovieDetails } from "../../../types/movie.types";
 
@@ -28,23 +29,25 @@ const MovieHero: React.FC<MovieHeroProps> = ({
   movie,
   children,
   onPlayTrailer,
-}) => {  const navigate = useNavigate();
-  const { isAuthenticated, user, openAuthDialog } = useAuth();
-  const [isBookmarked, setIsBookmarked] = useState(false);
+}) => {
+  const navigate = useNavigate();
+  const { isAuthenticated, openAuthDialog } = useAuth();
+  const { addToWatchlist, isInWatchlist, removeFromWatchlist } = useWatchlist();
+
+  const isBookmarked = isInWatchlist(movie.id);
 
   const handleBookmarkClick = () => {
     if (!isAuthenticated) {
       // Open login dialog if not authenticated
-      openAuthDialog('login');
+      openAuthDialog("login");
       return;
     }
 
-    setIsBookmarked(!isBookmarked);
-    // Here you would typically call an API to save the bookmark
-    console.log(
-      `Movie ${isBookmarked ? "removed from" : "added to"} bookmarks:`,
-      movie.id
-    );
+    if (isBookmarked) {
+      removeFromWatchlist(movie.id);
+    } else {
+      addToWatchlist(movie);
+    }
   };
 
   return (
@@ -137,9 +140,15 @@ const MovieHero: React.FC<MovieHeroProps> = ({
                   }}
                 >
                   Trailer
-                </Button>
+                </Button>{" "}
                 <Tooltip
-                  title={!isAuthenticated ? "Log in to bookmark movies" : ""}
+                  title={
+                    !isAuthenticated
+                      ? "Log in to save movies"
+                      : isBookmarked
+                      ? "Remove from watchlist"
+                      : "Add to watchlist"
+                  }
                 >
                   <Button
                     variant="outlined"
@@ -158,7 +167,7 @@ const MovieHero: React.FC<MovieHeroProps> = ({
                       },
                     }}
                   >
-                    {isBookmarked ? "Bookmarked" : "Bookmark"}
+                    {isBookmarked ? "Saved" : "Save"}
                   </Button>
                 </Tooltip>
               </Box>

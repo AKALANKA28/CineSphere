@@ -16,9 +16,9 @@ export const getDesignTokens = (mode: PaletteMode): ThemeOptions => ({
       dark: mode === 'light' ? '#01192c' : '#0099c8',
       contrastText: '#ffffff',
     },    secondary: {
-      main: '#b2070f',
-      light: '#d4383e',
-      dark: '#8c0000',
+      main: mode === 'light' ? '#b2070f' : '#e52a33',
+      light: mode === 'light' ? '#d4383e' : '#ff5c63',
+      dark: mode === 'light' ? '#8c0000' : '#a80000',
       contrastText: '#ffffff',
     },
     background: {
@@ -124,8 +124,6 @@ export const getDesignTokens = (mode: PaletteMode): ThemeOptions => ({
     MuiContainer: {
       styleOverrides: {
         root: {
-          // Let MUI handle responsive container sizing with its default behavior
-          // This ensures consistent behavior across all screen sizes
         },
       },
     },

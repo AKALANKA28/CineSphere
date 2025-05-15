@@ -151,11 +151,7 @@ const HeroSection: React.FC = () => {
   };
   const handlePlayClick = () => {
     if (trailerKey) {
-      // Option 1: Show embedded trailer
       setShowTrailer(true);
-
-      // Option 2: Open in new tab (disabled for now)
-      // window.open(`https://www.youtube.com/watch?v=${trailerKey}`, "_blank");
     }
   };
 

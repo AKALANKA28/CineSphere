@@ -73,7 +73,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    
+
     if (validateForm()) {
       try {
         const success = await register(
@@ -81,7 +81,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
           formData.email,
           formData.password
         );
-        
+
         if (success) {
           onSuccess();
         } else {
@@ -107,6 +107,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
     >
       <Grid container spacing={2}>
         <Grid item xs={12} sm={6}>
+          {" "}
           <TextField
             autoComplete="given-name"
             name="firstName"
@@ -119,9 +120,21 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
             onChange={handleChange}
             error={!!errors.firstName}
             helperText={errors.firstName}
+            color="secondary"
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                "&.Mui-focused fieldset": {
+                  borderColor: "secondary.main",
+                },
+              },
+              "& .MuiInputLabel-root.Mui-focused": {
+                color: "secondary.main",
+              },
+            }}
           />
         </Grid>
         <Grid item xs={12} sm={6}>
+          {" "}
           <TextField
             required
             fullWidth
@@ -133,9 +146,21 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
             onChange={handleChange}
             error={!!errors.lastName}
             helperText={errors.lastName}
+            color="secondary"
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                "&.Mui-focused fieldset": {
+                  borderColor: "secondary.main",
+                },
+              },
+              "& .MuiInputLabel-root.Mui-focused": {
+                color: "secondary.main",
+              },
+            }}
           />
         </Grid>
         <Grid item xs={12}>
+          {" "}
           <TextField
             required
             fullWidth
@@ -147,8 +172,19 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
             onChange={handleChange}
             error={!!errors.email}
             helperText={errors.email}
+            color="secondary"
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                "&.Mui-focused fieldset": {
+                  borderColor: "secondary.main",
+                },
+              },
+              "& .MuiInputLabel-root.Mui-focused": {
+                color: "secondary.main",
+              },
+            }}
           />
-        </Grid>
+        </Grid>{" "}
         <Grid item xs={12}>
           <TextField
             required
@@ -162,6 +198,17 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
             onChange={handleChange}
             error={!!errors.password}
             helperText={errors.password || "Must be at least 8 characters"}
+            color="secondary"
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                "&.Mui-focused fieldset": {
+                  borderColor: "secondary.main",
+                },
+              },
+              "& .MuiInputLabel-root.Mui-focused": {
+                color: "secondary.main",
+              },
+            }}
           />
         </Grid>
         <Grid item xs={12}>
@@ -177,22 +224,30 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
             onChange={handleChange}
             error={!!errors.confirmPassword}
             helperText={errors.confirmPassword}
+            color="secondary"
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                "&.Mui-focused fieldset": {
+                  borderColor: "secondary.main",
+                },
+              },
+              "& .MuiInputLabel-root.Mui-focused": {
+                color: "secondary.main",
+              },
+            }}
           />
         </Grid>
       </Grid>
-      
       {submitError && (
         <Box sx={{ mt: 2, width: "100%" }}>
-          <Alert severity="error">
-            {submitError}
-          </Alert>
+          <Alert severity="error">{submitError}</Alert>
         </Box>
-      )}
-      
+      )}{" "}
       <Button
         type="submit"
         fullWidth
         variant="contained"
+        color="secondary"
         sx={{ mt: 3, mb: 2, py: 1.2 }}
         disabled={isLoading}
       >

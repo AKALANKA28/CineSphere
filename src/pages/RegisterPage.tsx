@@ -9,6 +9,9 @@ import {
   Paper,
   Avatar,
   Grid,
+  Tabs,
+  Tab,
+  Alert,
 } from "@mui/material";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import { useNavigate } from "react-router-dom";
@@ -27,9 +30,8 @@ const RegisterPage: React.FC = () => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
   const [submitError, setSubmitError] = useState("");
+
   useEffect(() => {
-    // Redirect if already authenticated, but with a small delay
-    // to prevent the form from disappearing abruptly
     if (isAuthenticated) {
       const redirectTimer = setTimeout(() => {
         navigate("/");
@@ -46,7 +48,6 @@ const RegisterPage: React.FC = () => {
       [name]: value,
     });
 
-    // Clear error when field is edited
     if (errors[name]) {
       setErrors({
         ...errors,
@@ -81,6 +82,7 @@ const RegisterPage: React.FC = () => {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -88,9 +90,7 @@ const RegisterPage: React.FC = () => {
     if (validateForm()) {
       try {
         console.log("Registration data:", formData);
-        // In a real app, you would send this data to your backend API
 
-        // Call the register function from AuthContext
         const success = await register(
           formData.firstName + " " + formData.lastName,
           formData.email,
@@ -98,7 +98,6 @@ const RegisterPage: React.FC = () => {
         );
 
         if (success) {
-          // Add a small delay for smoother transition
           setTimeout(() => {
             navigate("/");
           }, 300);
@@ -113,6 +112,12 @@ const RegisterPage: React.FC = () => {
       }
     } else {
       setIsLoading(false);
+    }
+  };
+
+  const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
+    if (newValue === 0) {
+      navigate("/login");
     }
   };
 
@@ -143,136 +148,226 @@ const RegisterPage: React.FC = () => {
         },
       }}
     >
-      {" "}
       <Container maxWidth="xs" sx={{ position: "relative", zIndex: 1 }}>
         <Paper
           elevation={6}
           sx={{
-            p: 4,
             borderRadius: 2,
             backdropFilter: "blur(4px)",
             bgcolor: "rgba(255,255,255,0.9)",
+            overflow: "hidden",
           }}
         >
-          <Box
+          {" "}
+          <Tabs
+            value={1}
+            onChange={handleTabChange}
+            variant="fullWidth"
+            indicatorColor="secondary"
+            textColor="secondary"
             sx={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
+              borderBottom: 1,
+              borderColor: "divider",
             }}
           >
-            <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
-              <PersonAddIcon />
-            </Avatar>
-            <Typography component="h1" variant="h5" sx={{ mb: 3 }}>
-              Create an account
-            </Typography>
+            {" "}
+            <Tab
+              label="Login"
+              sx={{
+                py: 2,
+                fontWeight: "medium",
+                "&.Mui-selected": {
+                  color: "secondary.main",
+                  fontWeight: "bold",
+                },
+              }}
+            />
+            <Tab
+              label="Register"
+              sx={{
+                py: 2,
+                color: "secondary.main",
+                fontWeight: "medium",
+                "&.Mui-selected": {
+                  color: "secondary.main",
+                  fontWeight: "bold",
+                },
+              }}
+            />
+          </Tabs>
+          <Box sx={{ p: 4 }}>
             <Box
-              component="form"
-              noValidate
-              onSubmit={handleSubmit}
-              sx={{ mt: 1, width: "100%" }}
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+              }}
             >
-              <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    autoComplete="given-name"
-                    name="firstName"
-                    required
-                    fullWidth
-                    id="firstName"
-                    label="First Name"
-                    autoFocus
-                    value={formData.firstName}
-                    onChange={handleChange}
-                    error={!!errors.firstName}
-                    helperText={errors.firstName}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    required
-                    fullWidth
-                    id="lastName"
-                    label="Last Name"
-                    name="lastName"
-                    autoComplete="family-name"
-                    value={formData.lastName}
-                    onChange={handleChange}
-                    error={!!errors.lastName}
-                    helperText={errors.lastName}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    required
-                    fullWidth
-                    id="email"
-                    label="Email Address"
-                    name="email"
-                    autoComplete="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    error={!!errors.email}
-                    helperText={errors.email}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    required
-                    fullWidth
-                    name="password"
-                    label="Password"
-                    type="password"
-                    id="password"
-                    autoComplete="new-password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    error={!!errors.password}
-                    helperText={
-                      errors.password || "Must be at least 8 characters"
-                    }
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    required
-                    fullWidth
-                    name="confirmPassword"
-                    label="Confirm Password"
-                    type="password"
-                    id="confirmPassword"
-                    autoComplete="new-password"
-                    value={formData.confirmPassword}
-                    onChange={handleChange}
-                    error={!!errors.confirmPassword}
-                    helperText={errors.confirmPassword}
-                  />
-                </Grid>
-              </Grid>{" "}
-              {submitError && (
-                <Box sx={{ mt: 2, width: "100%" }}>
-                  <Typography color="error" variant="body2" align="center">
-                    {submitError}
-                  </Typography>
-                </Box>
-              )}
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                sx={{ mt: 3, mb: 2, py: 1.2 }}
-                disabled={isLoading}
+              <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
+                <PersonAddIcon />
+              </Avatar>
+              <Typography component="h1" variant="h5" sx={{ mb: 3 }}>
+                Create an account
+              </Typography>
+              <Box
+                component="form"
+                noValidate
+                onSubmit={handleSubmit}
+                sx={{ mt: 1, width: "100%" }}
               >
-                {isLoading ? "Registering..." : "Register"}
-              </Button>
-              <Grid container justifyContent="flex-end">
-                <Grid item>
-                  <Link href="/login" variant="body2">
-                    Already have an account? Sign in
-                  </Link>
-                </Grid>
-              </Grid>
+                {submitError && (
+                  <Alert severity="error" sx={{ mb: 2 }}>
+                    {submitError}
+                  </Alert>
+                )}
+                <Grid container spacing={2}>
+                  <Grid item xs={12} sm={6}>
+                    {" "}
+                    <TextField
+                      autoComplete="given-name"
+                      name="firstName"
+                      required
+                      fullWidth
+                      id="firstName"
+                      label="First Name"
+                      autoFocus
+                      value={formData.firstName}
+                      onChange={handleChange}
+                      error={!!errors.firstName}
+                      helperText={errors.firstName}
+                      color="secondary"
+                      sx={{
+                        "& .MuiOutlinedInput-root": {
+                          "&.Mui-focused fieldset": {
+                            borderColor: "secondary.main",
+                          },
+                        },
+                        "& .MuiInputLabel-root.Mui-focused": {
+                          color: "secondary.main",
+                        },
+                      }}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    {" "}
+                    <TextField
+                      required
+                      fullWidth
+                      id="lastName"
+                      label="Last Name"
+                      name="lastName"
+                      autoComplete="family-name"
+                      value={formData.lastName}
+                      onChange={handleChange}
+                      error={!!errors.lastName}
+                      helperText={errors.lastName}
+                      color="secondary"
+                      sx={{
+                        "& .MuiOutlinedInput-root": {
+                          "&.Mui-focused fieldset": {
+                            borderColor: "secondary.main",
+                          },
+                        },
+                        "& .MuiInputLabel-root.Mui-focused": {
+                          color: "secondary.main",
+                        },
+                      }}
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    {" "}
+                    <TextField
+                      required
+                      fullWidth
+                      id="email"
+                      label="Email Address"
+                      name="email"
+                      autoComplete="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      error={!!errors.email}
+                      helperText={errors.email}
+                      color="secondary"
+                      sx={{
+                        "& .MuiOutlinedInput-root": {
+                          "&.Mui-focused fieldset": {
+                            borderColor: "secondary.main",
+                          },
+                        },
+                        "& .MuiInputLabel-root.Mui-focused": {
+                          color: "secondary.main",
+                        },
+                      }}
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    {" "}
+                    <TextField
+                      required
+                      fullWidth
+                      name="password"
+                      label="Password"
+                      type="password"
+                      id="password"
+                      autoComplete="new-password"
+                      value={formData.password}
+                      onChange={handleChange}
+                      error={!!errors.password}
+                      helperText={
+                        errors.password || "Must be at least 8 characters"
+                      }
+                      color="secondary"
+                      sx={{
+                        "& .MuiOutlinedInput-root": {
+                          "&.Mui-focused fieldset": {
+                            borderColor: "secondary.main",
+                          },
+                        },
+                        "& .MuiInputLabel-root.Mui-focused": {
+                          color: "secondary.main",
+                        },
+                      }}
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    {" "}
+                    <TextField
+                      required
+                      fullWidth
+                      name="confirmPassword"
+                      label="Confirm Password"
+                      type="password"
+                      id="confirmPassword"
+                      autoComplete="new-password"
+                      value={formData.confirmPassword}
+                      onChange={handleChange}
+                      error={!!errors.confirmPassword}
+                      helperText={errors.confirmPassword}
+                      color="secondary"
+                      sx={{
+                        "& .MuiOutlinedInput-root": {
+                          "&.Mui-focused fieldset": {
+                            borderColor: "secondary.main",
+                          },
+                        },
+                        "& .MuiInputLabel-root.Mui-focused": {
+                          color: "secondary.main",
+                        },
+                      }}
+                    />
+                  </Grid>
+                </Grid>{" "}
+                <Button
+                  type="submit"
+                  fullWidth
+                  variant="contained"
+                  color="secondary"
+                  sx={{ mt: 3, mb: 2, py: 1.2 }}
+                  disabled={isLoading}
+                >
+                  {isLoading ? "Registering..." : "Register"}
+                </Button>
+              </Box>
             </Box>
           </Box>
         </Paper>

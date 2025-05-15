@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Container,
@@ -6,19 +6,30 @@ import {
   Paper,
   Avatar,
   Link,
+  TextField,
+  Button,
+  Grid,
+  FormControlLabel,
+  Checkbox,
+  Alert,
+  CircularProgress,
+  Tabs,
+  Tab,
 } from "@mui/material";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import LoginForm from "../components/ui/auth/LoginForm";
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuth();
-  
+  const { isAuthenticated, login } = useAuth();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
   useEffect(() => {
-    // Check if user is already logged in, with a small delay
-    // to prevent the form from disappearing abruptly
     if (isAuthenticated) {
       const redirectTimer = setTimeout(() => {
         navigate("/");
@@ -29,8 +40,32 @@ const LoginPage: React.FC = () => {
   }, [isAuthenticated, navigate]);
 
   const handleLoginSuccess = () => {
-    // Navigate back to home page after successful login
     navigate("/");
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      await login(email, password, rememberMe);
+      handleLoginSuccess();
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Failed to login. Please try again."
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
+    if (newValue === 1) {
+      navigate("/register");
+    }
   };
 
   return (
@@ -59,101 +94,157 @@ const LoginPage: React.FC = () => {
         },
       }}
     >
-      {" "}
       <Container maxWidth="xs" sx={{ position: "relative", zIndex: 1 }}>
         <Paper
           elevation={6}
           sx={{
-            p: 4,
             borderRadius: 2,
             backdropFilter: "blur(4px)",
             bgcolor: "rgba(255,255,255,0.9)",
+            overflow: "hidden",
           }}
         >
-          <Box
+          {" "}
+          <Tabs
+            value={0}
+            onChange={handleTabChange}
+            variant="fullWidth"
+            indicatorColor="secondary"
+            textColor="secondary"
             sx={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
+              borderBottom: 1,
+              borderColor: "divider",
             }}
           >
-            <Avatar sx={{ m: 1, bgcolor: "primary.main" }}>
-              <LockOutlinedIcon />
-            </Avatar>
-            <Typography component="h1" variant="h5" sx={{ mb: 3 }}>
-              Sign in
-            </Typography>
+            {" "}
+            <Tab
+              label="Login"
+              sx={{
+                py: 2,
+                color: "secondary.main",
+                fontWeight: "medium",
+                "&.Mui-selected": {
+                  color: "secondary.main",
+                  fontWeight: "bold",
+                },
+              }}
+            />
+            <Tab
+              label="Register"
+              sx={{
+                py: 2,
+                fontWeight: "medium",
+                "&.Mui-selected": {
+                  color: "secondary.main",
+                  fontWeight: "bold",
+                },
+              }}
+            />
+          </Tabs>
+          <Box sx={{ p: 4 }}>
             <Box
-              component="form"
-              onSubmit={handleSubmit}
-              sx={{ mt: 1, width: "100%" }}
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+              }}
             >
-              {error && (
-                <Alert severity="error" sx={{ mb: 2 }}>
-                  {error}
-                </Alert>
-              )}
-
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                id="email"
-                label="Email Address"
-                name="email"
-                autoComplete="email"
-                autoFocus={!email}
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                disabled={isLoading}
-              />
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                name="password"
-                label="Password"
-                type="password"
-                id="password"
-                autoComplete="current-password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                disabled={isLoading}
-                helperText="Password must be at least 6 characters"
-              />
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    value="remember"
-                    color="primary"
-                    checked={rememberMe}
-                    onChange={(e) => setRememberMe(e.target.checked)}
-                    disabled={isLoading}
-                  />
-                }
-                label="Remember me"
-              />
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                sx={{ mt: 3, mb: 2, py: 1.2 }}
-                disabled={isLoading || !email || password.length < 6}
+              {" "}
+              <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
+                <LockOutlinedIcon />
+              </Avatar>
+              <Typography component="h1" variant="h5" sx={{ mb: 3 }}>
+                Sign in
+              </Typography>
+              <Box
+                component="form"
+                onSubmit={handleSubmit}
+                sx={{ mt: 1, width: "100%" }}
               >
-                {isLoading ? <CircularProgress size={24} /> : "Sign In"}
-              </Button>
-              <Grid container>
-                <Grid item xs>
-                  <Link href="#" variant="body2">
-                    Forgot password?
-                  </Link>
+                {error && (
+                  <Alert severity="error" sx={{ mb: 2 }}>
+                    {error}
+                  </Alert>
+                )}{" "}
+                <TextField
+                  margin="normal"
+                  required
+                  fullWidth
+                  id="email"
+                  label="Email Address"
+                  name="email"
+                  autoComplete="email"
+                  autoFocus={!email}
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  disabled={isLoading}
+                  color="secondary"
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      "&.Mui-focused fieldset": {
+                        borderColor: "secondary.main",
+                      },
+                    },
+                    "& .MuiInputLabel-root.Mui-focused": {
+                      color: "secondary.main",
+                    },
+                  }}
+                />
+                <TextField
+                  margin="normal"
+                  required
+                  fullWidth
+                  name="password"
+                  label="Password"
+                  type="password"
+                  id="password"
+                  autoComplete="current-password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  disabled={isLoading}
+                  helperText="Password must be at least 6 characters"
+                  color="secondary"
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      "&.Mui-focused fieldset": {
+                        borderColor: "secondary.main",
+                      },
+                    },
+                    "& .MuiInputLabel-root.Mui-focused": {
+                      color: "secondary.main",
+                    },
+                  }}
+                />
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      value="remember"
+                      color="secondary"
+                      checked={rememberMe}
+                      onChange={(e) => setRememberMe(e.target.checked)}
+                      disabled={isLoading}
+                    />
+                  }
+                  label="Remember me"
+                />{" "}
+                <Button
+                  type="submit"
+                  fullWidth
+                  variant="contained"
+                  color="secondary"
+                  sx={{ mt: 3, mb: 2, py: 1.2 }}
+                  disabled={isLoading || !email || password.length < 6}
+                >
+                  {isLoading ? <CircularProgress size={24} /> : "Sign In"}
+                </Button>{" "}
+                <Grid container>
+                  <Grid item xs>
+                    <Link href="#" variant="body2" color="secondary">
+                      Forgot password?
+                    </Link>
+                  </Grid>
                 </Grid>
-                <Grid item>
-                  <Link href="/register" variant="body2">
-                    {"Don't have an account? Sign Up"}
-                  </Link>
-                </Grid>
-              </Grid>
+              </Box>
             </Box>
           </Box>
         </Paper>

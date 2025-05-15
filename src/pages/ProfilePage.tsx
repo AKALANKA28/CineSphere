@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import type { ReactNode } from "react";
 import {
   Box,
@@ -25,12 +25,9 @@ import { styled } from "@mui/material/styles";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import EditIcon from "@mui/icons-material/Edit";
 import PersonIcon from "@mui/icons-material/Person";
-import HistoryIcon from "@mui/icons-material/History";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
-import SecurityIcon from "@mui/icons-material/Security";
 import MovieCard from "../components/ui/MovieCard";
 import { useNavigate } from "react-router-dom";
-import { useMovieContext } from "../context/MovieContext";
 import { useWatchlist } from "../context/WatchlistContext";
 import type { Movie } from "../types/movie.types";
 
@@ -49,6 +46,7 @@ const TabPanel = (props: TabPanelProps) => {
       hidden={value !== index}
       id={`profile-tabpanel-${index}`}
       aria-labelledby={`profile-tab-${index}`}
+      style={{ display: value !== index ? "none" : "block" }}
       {...other}
     >
       {value === index && <Box sx={{ pt: 3 }}>{children}</Box>}
@@ -82,18 +80,30 @@ const ProfileCoverImage = styled(Box)(({ theme }) => ({
 
 const ProfilePage: React.FC = () => {
   const navigate = useNavigate();
-  const { popularMovies } = useMovieContext();
   const { favorites, watchlist } = useWatchlist();
   const [tabValue, setTabValue] = useState(0);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
+  // Use mounted state to prevent rendering components that might cause the offsetHeight error
+  const [mounted, setMounted] = useState(false);
+  const profileContainerRef = useRef<HTMLDivElement>(null);
   const [profileData, setProfileData] = useState({
     name: "John Doe",
     email: "john.doe@example.com",
     bio: "Movie enthusiast and cinephile. I love sci-fi and drama films.",
   });
 
-  // For watch history, we'll still use mock data since we don't track it yet
-  const watchHistory = popularMovies.slice(12, 18);
+  // Use useEffect to mark when the component is mounted
+  useEffect(() => {
+    // Set mounted to true after a small delay to ensure DOM is ready
+    const timer = setTimeout(() => {
+      setMounted(true);
+    }, 100);
+
+    return () => {
+      clearTimeout(timer);
+      setMounted(false);
+    };
+  }, []);
 
   const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
@@ -130,7 +140,7 @@ const ProfilePage: React.FC = () => {
 
   return (
     <Container maxWidth="lg" sx={{ py: 5 }}>
-      <Paper sx={{ overflow: "hidden" }}>
+      <Paper sx={{ overflow: "hidden" }} ref={profileContainerRef}>
         <ProfileCoverImage />
         <Box sx={{ px: { xs: 2, sm: 4 }, pb: 4 }}>
           <Grid container spacing={2}>
@@ -203,31 +213,8 @@ const ProfilePage: React.FC = () => {
                   </ListItemIcon>
                   <ListItemText primary="Watchlist" />
                 </ListItem>
-                <ListItem
-                  button
-                  selected={tabValue === 3}
-                  onClick={() => setTabValue(3)}
-                >
-                  <ListItemIcon>
-                    <HistoryIcon />
-                  </ListItemIcon>
-                  <ListItemText primary="Watch History" />
-                </ListItem>
-                <ListItem
-                  button
-                  selected={tabValue === 4}
-                  onClick={() => setTabValue(4)}
-                >
-                  <ListItemIcon>
-                    <SecurityIcon />
-                  </ListItemIcon>
-                  <ListItemText primary="Account Settings" />
-                </ListItem>
                 <ListItem button onClick={handleLogout}>
-                  <ListItemText
-                    primary="Logout"
-                    primaryTypographyProps={{ color: "error" }}
-                  />
+                  <ListItemText primary="Logout" />
                 </ListItem>
               </List>
             </Grid>
@@ -244,152 +231,104 @@ const ProfilePage: React.FC = () => {
                   <Tab label="Overview" {...a11yProps(0)} />
                   <Tab label="Favorites" {...a11yProps(1)} />
                   <Tab label="Watchlist" {...a11yProps(2)} />
-                  <Tab label="Watch History" {...a11yProps(3)} />
-                  <Tab label="Account Settings" {...a11yProps(4)} />
                 </Tabs>
               </Box>
-              <TabPanel value={tabValue} index={0}>
-                <Grid container spacing={3}>
-                  <Grid item xs={12}>
-                    <Typography variant="h6">About Me</Typography>
-                    <Typography variant="body1" sx={{ mt: 1 }}>
-                      {profileData.bio}
+
+              {/* Only render content when mounted */}
+              {mounted && (
+                <>
+                  <TabPanel value={tabValue} index={0}>
+                    <Grid container spacing={3}>
+                      <Grid item xs={12}>
+                        <Typography variant="h6">About Me</Typography>
+                        <Typography variant="body1" sx={{ mt: 1 }}>
+                          {profileData.bio}
+                        </Typography>
+                      </Grid>
+                      {favorites.length > 0 && (
+                        <Grid item xs={12}>
+                          <Typography variant="h6">Recent Favorites</Typography>
+                          <Grid container spacing={2} sx={{ mt: 1 }}>
+                            {favorites.slice(0, 5).map((movie: Movie) => (
+                              <Grid
+                                item
+                                key={movie.id}
+                                xs={12}
+                                sm={6}
+                                md={4}
+                                lg={2.4}
+                              >
+                                <MovieCard movie={movie} />
+                              </Grid>
+                            ))}
+                          </Grid>
+                        </Grid>
+                      )}
+                      {watchlist.length > 0 && (
+                        <Grid item xs={12}>
+                          <Typography variant="h6">
+                            Recently Added to Watchlist
+                          </Typography>
+                          <Grid container spacing={2} sx={{ mt: 1 }}>
+                            {watchlist.slice(0, 5).map((movie: Movie) => (
+                              <Grid
+                                item
+                                key={movie.id}
+                                xs={12}
+                                sm={6}
+                                md={4}
+                                lg={2.4}
+                              >
+                                <MovieCard movie={movie} />
+                              </Grid>
+                            ))}
+                          </Grid>
+                        </Grid>
+                      )}
+                    </Grid>
+                  </TabPanel>
+
+                  <TabPanel value={tabValue} index={1}>
+                    <Typography variant="h6" sx={{ mb: 2 }}>
+                      My Favorite Movies
                     </Typography>
-                  </Grid>{" "}
-                  <Grid item xs={12}>
-                    <Typography variant="h6">Recent Favorites</Typography>{" "}
-                    <Grid container spacing={2} sx={{ mt: 1 }}>
-                      {favorites.slice(0, 5).map((movie: Movie) => (
-                        <Grid
-                          item
-                          key={movie.id}
-                          xs={12}
-                          sm={6}
-                          md={4}
-                          lg={2.4}
-                        >
-                          <MovieCard movie={movie} />
-                        </Grid>
-                      ))}
-                    </Grid>
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Typography variant="h6">
-                      Recently Added to Watchlist
-                    </Typography>{" "}
-                    <Grid container spacing={2} sx={{ mt: 1 }}>
-                      {watchlist.slice(0, 5).map((movie: Movie) => (
-                        <Grid
-                          item
-                          key={movie.id}
-                          xs={12}
-                          sm={6}
-                          md={4}
-                          lg={2.4}
-                        >
-                          <MovieCard movie={movie} />
-                        </Grid>
-                      ))}
-                    </Grid>
-                  </Grid>
-                </Grid>
-              </TabPanel>
-              <TabPanel value={tabValue} index={1}>
-                <Typography variant="h6" sx={{ mb: 2 }}>
-                  My Favorite Movies
-                </Typography>{" "}
-                <Grid container spacing={2}>
-                  {favorites.map((movie: Movie) => (
-                    <Grid item key={movie.id} xs={12} sm={6} md={4} lg={2.4}>
-                      <MovieCard movie={movie} />
-                    </Grid>
-                  ))}
-                </Grid>
-              </TabPanel>{" "}
-              <TabPanel value={tabValue} index={2}>
-                <Typography variant="h6" sx={{ mb: 2 }}>
-                  My Watchlist
-                </Typography>{" "}
-                <Grid container spacing={2}>
-                  {watchlist.map((movie: Movie) => (
-                    <Grid item key={movie.id} xs={12} sm={6} md={4} lg={2.4}>
-                      <MovieCard movie={movie} />
-                    </Grid>
-                  ))}
-                </Grid>
-              </TabPanel>
-              <TabPanel value={tabValue} index={3}>
-                <Typography variant="h6" sx={{ mb: 2 }}>
-                  Watch History
-                </Typography>{" "}
-                <Grid container spacing={2}>
-                  {watchHistory.map((movie: Movie) => (
-                    <Grid item key={movie.id} xs={12} sm={6} md={4} lg={2.4}>
-                      <MovieCard movie={movie} />
-                    </Grid>
-                  ))}
-                </Grid>
-              </TabPanel>
-              <TabPanel value={tabValue} index={4}>
-                <Typography variant="h6" sx={{ mb: 3 }}>
-                  Account Settings
-                </Typography>
-
-                <Paper sx={{ p: 3 }}>
-                  <Typography variant="subtitle1" fontWeight="bold">
-                    Change Password
-                  </Typography>
-                  <Box component="form" sx={{ mt: 2 }}>
                     <Grid container spacing={2}>
-                      <Grid item xs={12}>
-                        <TextField
-                          fullWidth
-                          name="currentPassword"
-                          label="Current Password"
-                          type="password"
-                          id="currentPassword"
-                        />
-                      </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <TextField
-                          fullWidth
-                          name="newPassword"
-                          label="New Password"
-                          type="password"
-                          id="newPassword"
-                        />
-                      </Grid>
-                      <Grid item xs={12} sm={6}>
-                        <TextField
-                          fullWidth
-                          name="confirmPassword"
-                          label="Confirm New Password"
-                          type="password"
-                          id="confirmPassword"
-                        />
-                      </Grid>
-                      <Grid item xs={12}>
-                        <Button variant="contained" sx={{ mt: 1 }}>
-                          Update Password
-                        </Button>
-                      </Grid>
+                      {favorites.map((movie: Movie) => (
+                        <Grid
+                          item
+                          key={movie.id}
+                          xs={12}
+                          sm={6}
+                          md={4}
+                          lg={2.4}
+                        >
+                          <MovieCard movie={movie} />
+                        </Grid>
+                      ))}
                     </Grid>
-                  </Box>
-                </Paper>
+                  </TabPanel>
 
-                <Paper sx={{ p: 3, mt: 3 }}>
-                  <Typography
-                    variant="subtitle1"
-                    fontWeight="bold"
-                    sx={{ mb: 2 }}
-                  >
-                    Notification Settings
-                  </Typography>
-                  <Button variant="outlined" color="error">
-                    Delete Account
-                  </Button>
-                </Paper>
-              </TabPanel>
+                  <TabPanel value={tabValue} index={2}>
+                    <Typography variant="h6" sx={{ mb: 2 }}>
+                      My Watchlist
+                    </Typography>
+                    <Grid container spacing={2}>
+                      {watchlist.map((movie: Movie) => (
+                        <Grid
+                          item
+                          key={movie.id}
+                          xs={12}
+                          sm={6}
+                          md={4}
+                          lg={2.4}
+                        >
+                          <MovieCard movie={movie} />
+                        </Grid>
+                      ))}
+                    </Grid>
+                  </TabPanel>
+                </>
+              )}
             </Grid>
           </Grid>
         </Box>

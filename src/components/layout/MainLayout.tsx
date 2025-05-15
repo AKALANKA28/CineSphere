@@ -58,9 +58,16 @@ interface MainLayoutProps {
 const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   const navigate = useNavigate();
   const { searchQuery, setSearchQuery } = useMovieContext();
-  const { isAuthDialogOpen, closeAuthDialog, initialAuthTab, isAuthenticated, openAuthDialog, logout } = useAuth();
+  const {
+    isAuthDialogOpen,
+    closeAuthDialog,
+    initialAuthTab,
+    isAuthenticated,
+    openAuthDialog,
+    logout,
+  } = useAuth();
   const [drawerOpen, setDrawerOpen] = useState(false);
-  
+
   const handleDrawerToggle = () => {
     setDrawerOpen(!drawerOpen);
   };
@@ -103,10 +110,10 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
           </>
         ) : (
           <>
-            <ListItem button onClick={() => openAuthDialog('login')}>
+            <ListItem button onClick={() => openAuthDialog("login")}>
               <ListItemText primary="Log in" />
             </ListItem>
-            <ListItem button onClick={() => openAuthDialog('register')}>
+            <ListItem button onClick={() => openAuthDialog("register")}>
               <ListItemText primary="Register" />
             </ListItem>
           </>
@@ -144,7 +151,8 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
         </form>
       </Box>
     </Box>
-  );return (
+  );
+  return (
     <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
       <Header
         searchQuery={searchQuery}
@@ -171,12 +179,12 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
         }}
       >
         {children}
-      </Box>      <Footer />
-      
+      </Box>{" "}
+      <Footer />
       {/* Auth Dialog */}
-      <AuthDialog 
-        open={isAuthDialogOpen} 
-        onClose={closeAuthDialog} 
+      <AuthDialog
+        open={isAuthDialogOpen}
+        onClose={closeAuthDialog}
         initialTab={initialAuthTab}
       />
     </Box>

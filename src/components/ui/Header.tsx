@@ -199,12 +199,13 @@ const Header: React.FC<HeaderProps> = ({
                 />
               </Search>
             </form>
-          )}          {/* Right Side - Auth Buttons */}
+          )}{" "}
+          {/* Right Side - Auth Buttons */}
           {!isAuthenticated ? (
             <Box sx={{ display: "flex", alignItems: "center" }}>
               {" "}
               <Typography
-                onClick={() => openAuthDialog('login')}
+                onClick={() => openAuthDialog("login")}
                 sx={{
                   cursor: "pointer",
                   mx: 1,
@@ -233,7 +234,7 @@ const Header: React.FC<HeaderProps> = ({
                 |
               </Typography>{" "}
               <Typography
-                onClick={() => openAuthDialog('register')}
+                onClick={() => openAuthDialog("register")}
                 sx={{
                   cursor: "pointer",
                   mx: 1,
@@ -278,7 +279,8 @@ const Header: React.FC<HeaderProps> = ({
                   <Brightness4Icon fontSize="small" />
                 )}
               </IconButton>
-            </Box>          ) : (
+            </Box>
+          ) : (
             <Box sx={{ display: "flex", alignItems: "center" }}>
               {" "}
               <Typography
@@ -303,7 +305,7 @@ const Header: React.FC<HeaderProps> = ({
                 }}
                 onClick={() => navigate("/profile")}
               >
-                {user?.name?.charAt(0) || 'U'}
+                {user?.name?.charAt(0) || "U"}
               </Avatar>
               <Button
                 size="small"

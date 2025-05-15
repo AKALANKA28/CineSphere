@@ -45,17 +45,12 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
   };
 
   return (
-    <Box
-      component="form"
-      onSubmit={handleSubmit}
-      sx={{ width: "100%" }}
-    >
+    <Box component="form" onSubmit={handleSubmit} sx={{ width: "100%" }}>
       {error && (
         <Alert severity="error" sx={{ mb: 2 }}>
           {error}
         </Alert>
-      )}
-
+      )}{" "}
       <TextField
         margin="normal"
         required
@@ -68,8 +63,21 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         disabled={isLoading}
-      />
-      
+        color="secondary"
+        sx={{
+          "& .MuiOutlinedInput-root": {
+            "&:hover fieldset": {
+              borderColor: "secondary.main",
+            },
+            "&.Mui-focused fieldset": {
+              borderColor: "secondary.main",
+            },
+          },
+          "& .MuiInputLabel-root.Mui-focused": {
+            color: "secondary.main",
+          },
+        }}
+      />{" "}
       <TextField
         margin="normal"
         required
@@ -83,36 +91,48 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
         onChange={(e) => setPassword(e.target.value)}
         disabled={isLoading}
         helperText="Password must be at least 6 characters"
+        color="secondary"
+        sx={{
+          "& .MuiOutlinedInput-root": {
+            "&:hover fieldset": {
+              borderColor: "secondary.main",
+            },
+            "&.Mui-focused fieldset": {
+              borderColor: "secondary.main",
+            },
+          },
+          "& .MuiInputLabel-root.Mui-focused": {
+            color: "secondary.main",
+          },
+        }}
       />
-      
       <FormControlLabel
         control={
           <Checkbox
             value="remember"
-            color="primary"
+            color="secondary"
             checked={rememberMe}
             onChange={(e) => setRememberMe(e.target.checked)}
             disabled={isLoading}
           />
         }
         label="Remember me"
-      />
-      
+      />{" "}
       <Button
         type="submit"
         fullWidth
         variant="contained"
+        color="secondary"
         sx={{ mt: 3, mb: 2, py: 1.2 }}
         disabled={isLoading || !email || password.length < 6}
       >
         {isLoading ? <CircularProgress size={24} /> : "Sign In"}
-      </Button>
-
+      </Button>{" "}
       <Typography variant="body2" align="center" sx={{ mt: 2 }}>
-        <Button 
-          variant="text" 
-          size="small" 
-          color="primary"
+        <Button
+          variant="text"
+          size="small"
+          color="secondary"
           sx={{ textTransform: "none" }}
         >
           Forgot password?

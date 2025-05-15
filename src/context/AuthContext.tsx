@@ -12,8 +12,8 @@ interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   isAuthDialogOpen: boolean;
-  initialAuthTab: 'login' | 'register';
-  openAuthDialog: (tab?: 'login' | 'register') => void;
+  initialAuthTab: "login" | "register";
+  openAuthDialog: (tab?: "login" | "register") => void;
   closeAuthDialog: () => void;
   login: (
     email: string,
@@ -35,7 +35,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [isAuthDialogOpen, setIsAuthDialogOpen] = useState<boolean>(false);
-  const [initialAuthTab, setInitialAuthTab] = useState<'login' | 'register'>('login');
+  const [initialAuthTab, setInitialAuthTab] = useState<"login" | "register">(
+    "login"
+  );
 
   // Check if user is already logged in on mount
   useEffect(() => {
@@ -155,7 +157,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     });
   };
   // Open auth dialog
-  const openAuthDialog = (tab: 'login' | 'register' = 'login') => {
+  const openAuthDialog = (tab: "login" | "register" = "login") => {
     setInitialAuthTab(tab);
     setIsAuthDialogOpen(true);
   };
