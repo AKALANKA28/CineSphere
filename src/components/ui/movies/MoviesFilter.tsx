@@ -8,9 +8,12 @@ import {
   MenuItem,
   Button,
   Paper,
+  useTheme,
+  Stack,
 } from "@mui/material";
 import type { SelectChangeEvent } from "@mui/material";
 import type { Genre } from "../../../types/movie.types";
+import { Maximize } from "@mui/icons-material";
 
 interface MoviesFilterProps {
   genres: Genre[];
@@ -25,6 +28,7 @@ interface MoviesFilterProps {
   onYearChange: (event: SelectChangeEvent) => void;
   onLanguageChange: (event: SelectChangeEvent) => void;
   onSearch: (event: React.FormEvent) => void;
+  onReset?: () => void; // New prop for reset action
 }
 
 const MoviesFilter: React.FC<MoviesFilterProps> = ({
@@ -40,21 +44,22 @@ const MoviesFilter: React.FC<MoviesFilterProps> = ({
   onYearChange,
   onLanguageChange,
   onSearch,
+  onReset = () => {}, // Default empty function if not provided
 }) => {
+  const theme = useTheme();
+  const isDarkMode = theme.palette.mode === "dark";
+
   return (
     <Paper
       component="form"
-      elevation={3}
       onSubmit={onSearch}
       sx={{
         mb: 6,
         p: 3,
-        bgcolor: (theme) =>
-          theme.palette.mode === "light"
-            ? "primary.main"
-            : "rgba(18, 18, 18, 0.95)",
-        color: "white",
+        bgcolor: isDarkMode ? "rgba(18, 18, 18, 0)" : "background.paper",
+        color: "text.primary",
         borderRadius: 1,
+        width: "100%",
       }}
     >
       <Box sx={{ mb: 3 }}>
@@ -69,25 +74,31 @@ const MoviesFilter: React.FC<MoviesFilterProps> = ({
                 onChange={onGenreChange}
                 displayEmpty
                 sx={{
-                  color: "white",
+                  color: "text.primary",
                   ".MuiOutlinedInput-notchedOutline": {
-                    borderColor: "rgba(255, 255, 255, 0.3)",
+                    borderColor: isDarkMode
+                      ? "rgba(255, 255, 255, 0.3)"
+                      : "rgba(0, 0, 0, 0.23)",
                   },
                   "&:hover .MuiOutlinedInput-notchedOutline": {
-                    borderColor: "rgba(255, 255, 255, 0.5)",
+                    borderColor: isDarkMode
+                      ? "rgba(255, 255, 255, 0.5)"
+                      : "rgba(0, 0, 0, 0.5)",
                   },
                   "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
                     borderColor: "primary.main",
                   },
                   ".MuiSvgIcon-root": {
-                    color: "white",
+                    color: "text.primary",
                   },
                 }}
                 MenuProps={{
                   PaperProps: {
                     sx: {
-                      bgcolor: "rgba(24, 24, 24, 0.98)",
-                      color: "white",
+                      bgcolor: isDarkMode
+                        ? "rgba(24, 24, 24, 0.98)"
+                        : "background.paper",
+                      color: "text.primary",
                     },
                   },
                 }}
@@ -111,25 +122,31 @@ const MoviesFilter: React.FC<MoviesFilterProps> = ({
                 onChange={onRatingChange}
                 displayEmpty
                 sx={{
-                  color: "white",
+                  color: "text.primary",
                   ".MuiOutlinedInput-notchedOutline": {
-                    borderColor: "rgba(255, 255, 255, 0.3)",
+                    borderColor: isDarkMode
+                      ? "rgba(255, 255, 255, 0.3)"
+                      : "rgba(0, 0, 0, 0.23)",
                   },
                   "&:hover .MuiOutlinedInput-notchedOutline": {
-                    borderColor: "rgba(255, 255, 255, 0.5)",
+                    borderColor: isDarkMode
+                      ? "rgba(255, 255, 255, 0.5)"
+                      : "rgba(0, 0, 0, 0.5)",
                   },
                   "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
                     borderColor: "primary.main",
                   },
                   ".MuiSvgIcon-root": {
-                    color: "white",
+                    color: "text.primary",
                   },
                 }}
                 MenuProps={{
                   PaperProps: {
                     sx: {
-                      bgcolor: "rgba(24, 24, 24, 0.98)",
-                      color: "white",
+                      bgcolor: isDarkMode
+                        ? "rgba(24, 24, 24, 0.98)"
+                        : "background.paper",
+                      color: "text.primary",
                     },
                   },
                 }}
@@ -153,25 +170,31 @@ const MoviesFilter: React.FC<MoviesFilterProps> = ({
                 onChange={onYearChange}
                 displayEmpty
                 sx={{
-                  color: "white",
+                  color: "text.primary",
                   ".MuiOutlinedInput-notchedOutline": {
-                    borderColor: "rgba(255, 255, 255, 0.3)",
+                    borderColor: isDarkMode
+                      ? "rgba(255, 255, 255, 0.3)"
+                      : "rgba(0, 0, 0, 0.23)",
                   },
                   "&:hover .MuiOutlinedInput-notchedOutline": {
-                    borderColor: "rgba(255, 255, 255, 0.5)",
+                    borderColor: isDarkMode
+                      ? "rgba(255, 255, 255, 0.5)"
+                      : "rgba(0, 0, 0, 0.5)",
                   },
                   "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
                     borderColor: "primary.main",
                   },
                   ".MuiSvgIcon-root": {
-                    color: "white",
+                    color: "text.primary",
                   },
                 }}
                 MenuProps={{
                   PaperProps: {
                     sx: {
-                      bgcolor: "rgba(24, 24, 24, 0.98)",
-                      color: "white",
+                      bgcolor: isDarkMode
+                        ? "rgba(24, 24, 24, 0.98)"
+                        : "background.paper",
+                      color: "text.primary",
                     },
                   },
                 }}
@@ -198,25 +221,31 @@ const MoviesFilter: React.FC<MoviesFilterProps> = ({
                 onChange={onLanguageChange}
                 displayEmpty
                 sx={{
-                  color: "white",
+                  color: "text.primary",
                   ".MuiOutlinedInput-notchedOutline": {
-                    borderColor: "rgba(255, 255, 255, 0.3)",
+                    borderColor: isDarkMode
+                      ? "rgba(255, 255, 255, 0.3)"
+                      : "rgba(0, 0, 0, 0.23)",
                   },
                   "&:hover .MuiOutlinedInput-notchedOutline": {
-                    borderColor: "rgba(255, 255, 255, 0.5)",
+                    borderColor: isDarkMode
+                      ? "rgba(255, 255, 255, 0.5)"
+                      : "rgba(0, 0, 0, 0.5)",
                   },
                   "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
                     borderColor: "primary.main",
                   },
                   ".MuiSvgIcon-root": {
-                    color: "white",
+                    color: "text.primary",
                   },
                 }}
                 MenuProps={{
                   PaperProps: {
                     sx: {
-                      bgcolor: "rgba(24, 24, 24, 0.98)",
-                      color: "white",
+                      bgcolor: isDarkMode
+                        ? "rgba(24, 24, 24, 0.98)"
+                        : "background.paper",
+                      color: "text.primary",
                     },
                   },
                 }}
@@ -240,25 +269,31 @@ const MoviesFilter: React.FC<MoviesFilterProps> = ({
                 onChange={onSortByChange}
                 displayEmpty
                 sx={{
-                  color: "white",
+                  color: "text.primary",
                   ".MuiOutlinedInput-notchedOutline": {
-                    borderColor: "rgba(255, 255, 255, 0.3)",
+                    borderColor: isDarkMode
+                      ? "rgba(255, 255, 255, 0.3)"
+                      : "rgba(0, 0, 0, 0.23)",
                   },
                   "&:hover .MuiOutlinedInput-notchedOutline": {
-                    borderColor: "rgba(255, 255, 255, 0.5)",
+                    borderColor: isDarkMode
+                      ? "rgba(255, 255, 255, 0.5)"
+                      : "rgba(0, 0, 0, 0.5)",
                   },
                   "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
                     borderColor: "primary.main",
                   },
                   ".MuiSvgIcon-root": {
-                    color: "white",
+                    color: "text.primary",
                   },
                 }}
                 MenuProps={{
                   PaperProps: {
                     sx: {
-                      bgcolor: "rgba(24, 24, 24, 0.98)",
-                      color: "white",
+                      bgcolor: isDarkMode
+                        ? "rgba(24, 24, 24, 0.98)"
+                        : "background.paper",
+                      color: "text.primary",
                     },
                   },
                 }}
@@ -279,24 +314,36 @@ const MoviesFilter: React.FC<MoviesFilterProps> = ({
             item
             xs={12}
             sm={6}
-            md={0.5}
+            md={1}
             sx={{ display: "flex", alignItems: "flex-end" }}
           >
-            <Button
-              type="submit"
-              variant="contained"
-              color="primary"
-              sx={{
-                height: "40px",
-                bgcolor: "#0d47a1",
-                "&:hover": {
-                  bgcolor: "#1565c0",
-                },
-                textTransform: "none",
-              }}
-            >
-              Apply
-            </Button>
+            <Stack direction="row" spacing={1} width="100%">
+                <Button
+                type="submit"
+                variant="contained"
+                color="primary"
+                sx={{
+                  height: "40px",
+                  textTransform: "none",
+                  flex: 1,
+                }}
+              >
+                Apply
+              </Button>
+              <Button
+                type="button"
+                variant="outlined"
+                onClick={onReset}
+                sx={{
+                  height: "40px",
+                  textTransform: "none",
+                  flex: 1,
+                }}
+              >
+                Reset
+              </Button>
+            
+            </Stack>
           </Grid>
         </Grid>
       </Box>

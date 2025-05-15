@@ -18,15 +18,17 @@ const Footer: React.FC = () => {
         px: 2,
         mt: "auto",
         backgroundColor:
-          mode === "dark"
-            ? theme.palette.background.paper
-            : theme.palette.grey[900],
-        color: theme.palette.common.white,
+          mode === "light"
+            ? theme.palette.grey[100]
+            : theme.palette.background.paper,
+        color: theme.palette.text.primary,
+        borderTop: 1,
+        borderColor: "divider",
       }}
     >
       <Container maxWidth="xl">
         <Typography variant="body2" align="center">
-          © {new Date().getFullYear()} Movie Explorer. All rights reserved.
+          © {new Date().getFullYear()} CineSphere. All rights reserved.
         </Typography>
       </Container>
     </Box>

@@ -6,7 +6,7 @@ import type { Movie } from "../../../../types/movie.types";
 const MovieCardWrapper = styled(Box)(() => ({
   flexShrink: 0,
   borderRadius: "8px",
-  overflow: "hidden",
+  overflow: "visible", // Changed from "hidden" to "visible" to ensure the entire card is shown when enlarged
   cursor: "pointer",
 }));
 
@@ -47,10 +47,11 @@ const HeroMovieCard: React.FC<HeroMovieCardProps> = ({
         width: getCardWidth(isSelected),
         transition: "all 0.4s ease",
         scrollSnapAlign: isMobile ? "center" : "none",
-        transform: isSelected ? "scale(1.1)" : "scale(1)",
+        transform: isSelected ? "scale(1.08)" : "scale(1)",
         position: "relative",
         zIndex: isSelected ? 5 : 1,
         transformOrigin: "center center",
+        margin: isSelected ? "0 8px" : "0", // Adding margin to create space for the scaled card
       }}
     >
       <Box
@@ -67,12 +68,7 @@ const HeroMovieCard: React.FC<HeroMovieCardProps> = ({
           backgroundPosition: "center",
           borderRadius: "8px",
           transition: "all 0.4s ease",
-          border: isSelected
-            ? `3px solid ${theme.palette.primary.main}`
-            : "1px solid rgba(255,255,255,0.2)",
-          boxShadow: isSelected
-            ? `0 0 25px ${alpha(theme.palette.primary.main, 0.8)}`
-            : "none",
+        
         }}
       />
     </MovieCardWrapper>

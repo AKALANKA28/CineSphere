@@ -29,48 +29,70 @@ const CastTab: React.FC<CastTabProps> = ({
           mb: 3,
         }}
       >
-        <Typography variant="h5" sx={{ fontWeight: 500 }}>
+        {" "}
+        <Typography
+          variant="h5"
+          sx={{ fontWeight: 500, color: "text.primary" }}
+        >
           Cast
         </Typography>
         <Box sx={{ display: "flex" }}>
           <Button
             onClick={handleCastPrev}
             disabled={castPage === 0}
-            sx={{
+            sx={(theme) => ({
               minWidth: 40,
               width: 40,
               height: 40,
               borderRadius: "50%",
-              backgroundColor: "rgba(255,255,255,0.1)",
-              color: "white",
+              backgroundColor:
+                theme.palette.mode === "light"
+                  ? "rgba(0,0,0,0.1)"
+                  : "rgba(255,255,255,0.1)",
+              color: theme.palette.mode === "light" ? "#333" : "#fff",
               mr: 1,
               "&:hover": {
-                backgroundColor: "rgba(255,255,255,0.2)",
+                backgroundColor:
+                  theme.palette.mode === "light"
+                    ? "rgba(0,0,0,0.2)"
+                    : "rgba(255,255,255,0.2)",
               },
               "&.Mui-disabled": {
-                color: "rgba(255,255,255,0.3)",
+                color:
+                  theme.palette.mode === "light"
+                    ? "rgba(0,0,0,0.3)"
+                    : "rgba(255,255,255,0.3)",
               },
-            }}
+            })}
           >
             <NavigateBeforeIcon />
-          </Button>
+          </Button>{" "}
           <Button
             onClick={handleCastNext}
             disabled={castPage >= Math.ceil(cast.length / itemsPerPage.md) - 1}
-            sx={{
+            sx={(theme) => ({
               minWidth: 40,
               width: 40,
               height: 40,
               borderRadius: "50%",
-              backgroundColor: "rgba(255,255,255,0.1)",
-              color: "white",
+              backgroundColor:
+                theme.palette.mode === "light"
+                  ? "rgba(0,0,0,0.1)"
+                  : "rgba(255,255,255,0.1)",
+              color: theme.palette.mode === "light" ? "#333" : "#fff",
               "&:hover": {
-                backgroundColor: "rgba(255,255,255,0.2)",
+                backgroundColor:
+                  theme.palette.mode === "light"
+                    ? "rgba(0,0,0,0.2)"
+                    : "rgba(255,255,255,0.2)",
               },
               "&.Mui-disabled": {
-                color: "rgba(255,255,255,0.3)",
+                color:
+                  theme.palette.mode === "light"
+                    ? "rgba(0,0,0,0.3)"
+                    : "rgba(255,255,255,0.3)",
               },
-            }}
+            })}
           >
             <NavigateNextIcon />
           </Button>
@@ -111,10 +133,15 @@ const CastTab: React.FC<CastTabProps> = ({
                       sx={{ fontWeight: 500, mb: 0.5 }}
                     >
                       {actor.name}
-                    </Typography>
+                    </Typography>{" "}
                     <Typography
                       variant="body2"
-                      sx={{ color: "rgba(255,255,255,0.7)" }}
+                      sx={(theme) => ({
+                        color:
+                          theme.palette.mode === "light"
+                            ? "rgba(0,0,0,0.7)"
+                            : "rgba(255,255,255,0.7)",
+                      })}
                     >
                       {actor.character}
                     </Typography>
@@ -124,11 +151,14 @@ const CastTab: React.FC<CastTabProps> = ({
             <Grid item xs={12}>
               <Button
                 variant="text"
-                sx={{
-                  color: "rgba(255,255,255,0.7)",
+                sx={(theme) => ({
+                  color:
+                    theme.palette.mode === "light"
+                      ? "primary.main"
+                      : "rgba(255,255,255,0.7)",
                   textTransform: "none",
                   mt: 1,
-                }}
+                })}
               >
                 View all cast members
               </Button>
@@ -136,7 +166,15 @@ const CastTab: React.FC<CastTabProps> = ({
           </Grid>
         </Box>
       ) : (
-        <Typography variant="body1" sx={{ color: "rgba(255,255,255,0.7)" }}>
+        <Typography
+          variant="body1"
+          sx={(theme) => ({
+            color:
+              theme.palette.mode === "light"
+                ? "rgba(0,0,0,0.7)"
+                : "rgba(255,255,255,0.7)",
+          })}
+        >
           No cast information available.
         </Typography>
       )}

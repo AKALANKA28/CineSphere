@@ -7,59 +7,25 @@ import {
   Container,
   IconButton,
   Avatar,
-  Button,
   useMediaQuery,
+  Menu,
+  MenuItem,
+  Divider,
+  InputBase,
+  Paper,
 } from "@mui/material";
 import { styled, alpha } from "@mui/material/styles";
 import SearchIcon from "@mui/icons-material/Search";
 import MenuIcon from "@mui/icons-material/Menu";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
 import Brightness7Icon from "@mui/icons-material/Brightness7";
-import InputBase from "@mui/material/InputBase";
+import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
+import LogoutIcon from "@mui/icons-material/Logout";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "../../context/ThemeContext";
 import { useAuth } from "../../context/AuthContext";
 import Logo from "./Logo";
 import { useTheme as useMuiTheme } from "@mui/material/styles";
-
-const Search = styled("div")(({ theme }) => ({
-  position: "relative",
-  borderRadius: theme.shape.borderRadius,
-  backgroundColor: alpha(theme.palette.common.white, 0.15),
-  "&:hover": {
-    backgroundColor: alpha(theme.palette.common.white, 0.25),
-  },
-  marginRight: theme.spacing(2),
-  marginLeft: 0,
-  width: "100%",
-  [theme.breakpoints.up("sm")]: {
-    marginLeft: theme.spacing(3),
-    width: "auto",
-  },
-}));
-
-const SearchIconWrapper = styled("div")(({ theme }) => ({
-  padding: theme.spacing(0, 2),
-  height: "100%",
-  position: "absolute",
-  pointerEvents: "none",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-}));
-
-const StyledInputBase = styled(InputBase)(({ theme }) => ({
-  color: "inherit",
-  "& .MuiInputBase-input": {
-    padding: theme.spacing(1, 1, 1, 0),
-    paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-    transition: theme.transitions.create("width"),
-    width: "100%",
-    [theme.breakpoints.up("md")]: {
-      width: "20ch",
-    },
-  },
-}));
 
 interface HeaderProps {
   searchQuery: string;
@@ -77,6 +43,8 @@ const Header: React.FC<HeaderProps> = ({
   const { isAuthenticated, logout, user, openAuthDialog } = useAuth();
   const muiTheme = useMuiTheme();
   const isMobile = useMediaQuery(muiTheme.breakpoints.down("md"));
+  const isSmallScreen = useMediaQuery(muiTheme.breakpoints.down("sm"));
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(event.target.value);
@@ -85,26 +53,25 @@ const Header: React.FC<HeaderProps> = ({
   const handleSearchSubmit = (event: React.FormEvent) => {
     event.preventDefault();
     if (searchQuery.trim()) {
-      // Navigate first, then let the search page handle the search
       const encodedQuery = encodeURIComponent(searchQuery);
       navigate(`/search?query=${encodedQuery}`);
     }
   };
+
   const [isScrolled, setIsScrolled] = useState(false);
-  // Detect scroll position for transparent header effect
   useEffect(() => {
     const handleScroll = () => {
       const scrollPosition = window.scrollY;
       setIsScrolled(scrollPosition > 50);
     };
 
-    // Initialize scroll state
     handleScroll();
     window.addEventListener("scroll", handleScroll);
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
+
   return (
     <AppBar
       position="fixed"
@@ -113,239 +80,514 @@ const Header: React.FC<HeaderProps> = ({
       sx={{
         background: isScrolled
           ? mode === "dark"
-            ? "rgba(0,0,0,0.7)"
-            : "rgba(255,255,255,0.7)"
+            ? "rgba(0,0,0,0.85)"
+            : "rgba(255,255,255,0.85)"
+          : mode === "light"
+          ? "rgba(255, 255, 255, 0.37)" 
           : "transparent",
-        backdropFilter: isScrolled ? "blur(8px)" : "none",
+        backdropFilter: isScrolled
+          ? "blur(10px)"
+          : mode === "light"
+          ? "blur(5px)"
+          : "none",
         transition: "all 0.3s ease",
-        boxShadow: "none",
+        boxShadow: isScrolled
+          ? "0 2px 4px rgba(0,0,0,0.1)"
+          : mode === "light"
+          ? "0 1px 3px rgba(0,0,0,0.05)"
+          : "none",
         zIndex: (theme) => theme.zIndex.drawer + 1,
-        color: isScrolled ? "text.primary" : muiTheme.palette.common.white,
+        color: isScrolled
+          ? "text.primary"
+          : mode === "dark"
+          ? muiTheme.palette.common.white
+          : muiTheme.palette.text.primary,
+        height: { xs: "64px", sm: "auto" },
       }}
     >
       <Container maxWidth="xl">
-        <Toolbar disableGutters>
-          {/* Left Side - Logo and Menu Icon */}
-          <IconButton
-            size="large"
-            edge="start"
-            color="inherit"
-            aria-label="menu"
-            onClick={handleDrawerToggle}
-            sx={{ mr: 2, display: { xs: "block", md: "none" } }}
-          >
-            <MenuIcon />
-          </IconButton>{" "}
-          {/* Logo */}
-          <Box sx={{ mr: 2, display: { xs: "none", sm: "block" } }}>
-            <Logo />
+        <Toolbar
+          disableGutters
+          sx={{
+            minHeight: { xs: "64px", sm: "64px" },
+            justifyContent: "space-between",
+            px: { xs: 1, sm: 2 },
+          }}
+        >
+          {/* Left Section - Menu Icon and Logo */}
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+            <IconButton
+              size="medium"
+              edge="start"
+              color="inherit"
+              aria-label="menu"
+              onClick={handleDrawerToggle}
+              sx={{ mr: 1, display: { xs: "flex", md: "none" } }}
+            >
+              <MenuIcon />
+            </IconButton>
+            <Box sx={{ mr: 2, display: { xs: "none", sm: "block" } }}>
+              <Logo />
+            </Box>
+            <Box sx={{ mr: 1, display: { xs: "block", sm: "none" } }}>
+              <Logo variant="compact" />
+            </Box>
           </Box>
-          <Box sx={{ mr: 2, display: { xs: "block", sm: "none" } }}>
-            <Logo variant="compact" />
-          </Box>{" "}
-          {/* Navigation Links */}
-          <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
-            <Typography
-              onClick={() => navigate("/movies")}
+
+          {/* Empty space to push content to right */}
+          <Box sx={{ flexGrow: 1 }} />
+
+          {/* Right Section - Search Bar and Navigation */}
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+            {/* Search Bar */}
+            {!isMobile && (
+              <form onSubmit={handleSearchSubmit}>
+                <Paper
+                  component="div"
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    width: "auto",
+                    height: 40,
+                    p: "2px 8px",
+                    mr: 2,
+                    borderRadius: 5,
+                    bgcolor:
+                      mode === "dark"
+                        ? alpha(muiTheme.palette.common.white, 0.15)
+                        : alpha(muiTheme.palette.common.black, 0.08),
+                    "&:hover": {
+                      bgcolor:
+                        mode === "dark"
+                          ? alpha(muiTheme.palette.common.white, 0.25)
+                          : alpha(muiTheme.palette.common.black, 0.12),
+                    },
+                    boxShadow: "none",
+                  }}
+                >
+                  <SearchIcon sx={{ color: "action.active", mr: 1, my: 0.5 }} />
+                  <InputBase
+                    placeholder="Search movies…"
+                    value={searchQuery}
+                    onChange={handleSearchChange}
+                    inputProps={{ "aria-label": "search movies" }}
+                    sx={{
+                      ml: 1,
+                      flex: 1,
+                      color: isScrolled
+                        ? "inherit"
+                        : mode === "dark"
+                        ? muiTheme.palette.common.white
+                        : muiTheme.palette.text.primary,
+                      fontSize: "0.95rem",
+                    }}
+                  />
+                </Paper>
+              </form>
+            )}
+
+            {/* Navigation Links */}
+            <Box
               sx={{
-                mx: 2,
-                cursor: "pointer",
-                textShadow: !isScrolled
-                  ? "0px 0px 4px rgba(0,0,0,0.7)"
-                  : "none",
-                color: isScrolled ? "inherit" : muiTheme.palette.common.white,
-                "&:hover": {
-                  color: muiTheme.palette.secondary.main,
-                },
+                display: { xs: "none", md: "flex" },
+                alignItems: "center",
+                mr: 2,
               }}
             >
-              Browse Movies
-            </Typography>
-            <Typography
-              onClick={() => navigate("/trending")}
-              sx={{
-                mx: 2,
-                cursor: "pointer",
-                textShadow: !isScrolled
-                  ? "0px 0px 4px rgba(0,0,0,0.7)"
-                  : "none",
-                color: isScrolled ? "inherit" : muiTheme.palette.common.white,
-                "&:hover": {
-                  color: muiTheme.palette.secondary.main,
-                },
-              }}
-            >
-              Trending
-            </Typography>
-          </Box>
-          {/* Search Bar */}
-          {!isMobile && (
-            <form
-              onSubmit={handleSearchSubmit}
-              style={{
-                flexGrow: 0,
-                marginRight: "16px",
-              }}
-            >
-              <Search>
-                <SearchIconWrapper>
-                  <SearchIcon />
-                </SearchIconWrapper>
-                <StyledInputBase
-                  placeholder="Search movies…"
-                  inputProps={{ "aria-label": "search" }}
-                  value={searchQuery}
-                  onChange={handleSearchChange}
-                />
-              </Search>
-            </form>
-          )}{" "}
-          {/* Right Side - Auth Buttons */}
-          {!isAuthenticated ? (
-            <Box sx={{ display: "flex", alignItems: "center" }}>
-              {" "}
               <Typography
-                onClick={() => openAuthDialog("login")}
+                onClick={() => navigate("/movies")}
                 sx={{
+                  mx: 1.5,
                   cursor: "pointer",
-                  mx: 1,
-                  fontSize: "0.9rem",
-                  textShadow: !isScrolled
-                    ? "0px 0px 4px rgba(0,0,0,0.7)"
-                    : "none",
-                  color: isScrolled ? "inherit" : muiTheme.palette.common.white,
-                  "&:hover": {
-                    color: muiTheme.palette.secondary.main,
-                  },
-                }}
-              >
-                Log in
-              </Typography>
-              <Typography
-                sx={{
-                  mx: 0.5,
+                  textShadow:
+                    !isScrolled && mode === "dark"
+                      ? "0px 0px 4px rgba(0,0,0,0.7)"
+                      : "none",
                   color: isScrolled
-                    ? "text.secondary"
-                    : alpha(muiTheme.palette.common.white, 0.7),
-                  fontWeight: "light",
-                  fontSize: "0.9rem",
-                }}
-              >
-                |
-              </Typography>{" "}
-              <Typography
-                onClick={() => openAuthDialog("register")}
-                sx={{
-                  cursor: "pointer",
-                  mx: 1,
-                  fontSize: "0.9rem",
-                  textShadow: !isScrolled
-                    ? "0px 0px 4px rgba(0,0,0,0.7)"
-                    : "none",
-                  color: isScrolled ? "inherit" : muiTheme.palette.common.white,
+                    ? "inherit"
+                    : mode === "dark"
+                    ? muiTheme.palette.common.white
+                    : muiTheme.palette.text.primary,
                   "&:hover": {
                     color: muiTheme.palette.secondary.main,
                   },
+                  fontWeight: 500,
+                  fontSize: "0.95rem",
                 }}
               >
-                Register
-              </Typography>{" "}
-              <IconButton
-                sx={{
-                  ml: 1,
-                  bgcolor:
-                    mode === "dark"
-                      ? "rgba(255, 255, 255, 0.1)"
-                      : "rgba(0, 0, 0, 0.08)",
-                  "&:hover": {
-                    bgcolor:
-                      mode === "dark"
-                        ? "rgba(255, 255, 255, 0.2)"
-                        : "rgba(0, 0, 0, 0.15)",
-                  },
-                }}
-                onClick={toggleTheme}
-                color="inherit"
-                aria-label={
-                  mode === "dark"
-                    ? "Switch to light mode"
-                    : "Switch to dark mode"
-                }
-                size="small"
-              >
-                {mode === "dark" ? (
-                  <Brightness7Icon fontSize="small" />
-                ) : (
-                  <Brightness4Icon fontSize="small" />
-                )}
-              </IconButton>
-            </Box>
-          ) : (
-            <Box sx={{ display: "flex", alignItems: "center" }}>
-              {" "}
-              <Typography
-                onClick={() => navigate("/profile")}
-                sx={{
-                  cursor: "pointer",
-                  mx: 1,
-                  fontSize: "0.9rem",
-                  "&:hover": {
-                    color: "secondary.main",
-                  },
-                }}
-              >
-                My Profile
+                Browse Movies
               </Typography>
-              <Avatar
+
+              <Typography
+                onClick={() => navigate("/trending")}
                 sx={{
-                  width: 32,
-                  height: 32,
+                  mx: 1.5,
                   cursor: "pointer",
-                  ml: 1,
-                }}
-                onClick={() => navigate("/profile")}
-              >
-                {user?.name?.charAt(0) || "U"}
-              </Avatar>
-              <Button
-                size="small"
-                variant="text"
-                onClick={logout}
-                sx={{ ml: 2, fontSize: "0.75rem" }}
-              >
-                Logout
-              </Button>{" "}
-              <IconButton
-                sx={{
-                  ml: 1,
-                  bgcolor:
-                    mode === "dark"
-                      ? "rgba(255, 255, 255, 0.1)"
-                      : "rgba(0, 0, 0, 0.08)",
+                  textShadow:
+                    !isScrolled && mode === "dark"
+                      ? "0px 0px 4px rgba(0,0,0,0.7)"
+                      : "none",
+                  color: isScrolled
+                    ? "inherit"
+                    : mode === "dark"
+                    ? muiTheme.palette.common.white
+                    : muiTheme.palette.text.primary,
                   "&:hover": {
+                    color: muiTheme.palette.secondary.main,
+                  },
+                  fontWeight: 500,
+                  fontSize: "0.95rem",
+                }}
+              >
+                Trending
+              </Typography>
+
+              {isAuthenticated && (
+                <Typography
+                  onClick={() => navigate("/watchlist")}
+                  sx={{
+                    mx: 1.5,
+                    cursor: "pointer",
+                    textShadow:
+                      !isScrolled && mode === "dark"
+                        ? "0px 0px 4px rgba(0,0,0,0.7)"
+                        : "none",
+                    color: isScrolled
+                      ? "inherit"
+                      : mode === "dark"
+                      ? muiTheme.palette.common.white
+                      : muiTheme.palette.text.primary,
+                    "&:hover": {
+                      color: muiTheme.palette.secondary.main,
+                    },
+                    fontWeight: 500,
+                    fontSize: "0.95rem",
+                  }}
+                >
+                  My Watchlist
+                </Typography>
+              )}
+            </Box>
+
+            {/* Mobile space */}
+            <Box sx={{ flexGrow: 1, display: { md: "none" } }} />
+
+            {/* Right Side - Auth Buttons */}
+            {!isAuthenticated ? (
+              <Box sx={{ display: "flex", alignItems: "center" }}>
+                {!isSmallScreen && (
+                  <>
+                    <Typography
+                      onClick={() => openAuthDialog("login")}
+                      sx={{
+                        cursor: "pointer",
+                        mx: 1,
+                        fontSize: "0.95rem",
+                        textShadow:
+                          !isScrolled && mode === "dark"
+                            ? "0px 0px 4px rgba(0,0,0,0.7)"
+                            : "none",
+                        color: isScrolled
+                          ? "inherit"
+                          : mode === "dark"
+                          ? muiTheme.palette.common.white
+                          : muiTheme.palette.text.primary,
+                        "&:hover": {
+                          color: muiTheme.palette.secondary.main,
+                        },
+                        fontWeight: 500,
+                      }}
+                    >
+                      Log in
+                    </Typography>
+                    <Typography
+                      sx={{
+                        mx: 0.5,
+                        color: isScrolled
+                          ? "text.secondary"
+                          : mode === "dark"
+                          ? alpha(muiTheme.palette.common.white, 0.7)
+                          : alpha(muiTheme.palette.text.primary, 0.7),
+                        fontWeight: "light",
+                        fontSize: "0.95rem",
+                      }}
+                    >
+                      |
+                    </Typography>
+                    <Typography
+                      onClick={() => openAuthDialog("register")}
+                      sx={{
+                        cursor: "pointer",
+                        mx: 1,
+                        fontSize: "0.95rem",
+                        fontWeight: 500,
+                        textShadow:
+                          !isScrolled && mode === "dark"
+                            ? "0px 0px 4px rgba(0,0,0,0.7)"
+                            : "none",
+                        color: isScrolled
+                          ? mode === "light"
+                            ? muiTheme.palette.primary.dark
+                            : "inherit"
+                          : mode === "dark"
+                          ? muiTheme.palette.common.white
+                          : muiTheme.palette.primary.main,
+                        "&:hover": {
+                          color: muiTheme.palette.primary.main,
+                        },
+                      }}
+                    >
+                      Register
+                    </Typography>
+                  </>
+                )}
+                {isMobile && (
+                  <IconButton
+                    color="inherit"
+                    aria-label="search"
+                    onClick={() => handleDrawerToggle()}
+                    size="medium"
+                    sx={{ mr: 1 }}
+                  >
+                    <SearchIcon />
+                  </IconButton>
+                )}
+                <IconButton
+                  sx={{
                     bgcolor:
                       mode === "dark"
-                        ? "rgba(255, 255, 255, 0.2)"
-                        : "rgba(0, 0, 0, 0.15)",
-                  },
-                }}
-                onClick={toggleTheme}
-                color="inherit"
-                size="small"
-                aria-label={
-                  mode === "dark"
-                    ? "Switch to light mode"
-                    : "Switch to dark mode"
-                }
-              >
-                {mode === "dark" ? (
-                  <Brightness7Icon fontSize="small" />
-                ) : (
-                  <Brightness4Icon fontSize="small" />
+                        ? "rgba(255, 255, 255, 0.1)"
+                        : "rgba(0, 0, 0, 0.08)",
+                    "&:hover": {
+                      bgcolor:
+                        mode === "dark"
+                          ? "rgba(255, 255, 255, 0.2)"
+                          : "rgba(0, 0, 0, 0.15)",
+                    },
+                  }}
+                  onClick={toggleTheme}
+                  color="inherit"
+                  aria-label={
+                    mode === "dark"
+                      ? "Switch to light mode"
+                      : "Switch to dark mode"
+                  }
+                  size="small"
+                >
+                  {mode === "dark" ? (
+                    <Brightness7Icon fontSize="small" />
+                  ) : (
+                    <Brightness4Icon fontSize="small" />
+                  )}
+                </IconButton>
+              </Box>
+            ) : (
+              <Box sx={{ display: "flex", alignItems: "center" }}>
+                <IconButton
+                  sx={{
+                    mr: 2,
+                    bgcolor:
+                      mode === "dark"
+                        ? "rgba(255, 255, 255, 0.1)"
+                        : "rgba(0, 0, 0, 0.08)",
+                    "&:hover": {
+                      bgcolor:
+                        mode === "dark"
+                          ? "rgba(255, 255, 255, 0.2)"
+                          : "rgba(0, 0, 0, 0.15)",
+                    },
+                  }}
+                  onClick={toggleTheme}
+                  color="inherit"
+                  size="medium"
+                  aria-label={
+                    mode === "dark"
+                      ? "Switch to light mode"
+                      : "Switch to dark mode"
+                  }
+                >
+                  {mode === "dark" ? (
+                    <Brightness7Icon fontSize="small" />
+                  ) : (
+                    <Brightness4Icon fontSize="small" />
+                  )}
+                </IconButton>
+                {isMobile && (
+                  <IconButton
+                    color="inherit"
+                    aria-label="search"
+                    onClick={() => handleDrawerToggle()}
+                    size="medium"
+                    sx={{ mr: 1 }}
+                  >
+                    <SearchIcon />
+                  </IconButton>
                 )}
-              </IconButton>
-            </Box>
-          )}
+                <Box
+                  sx={{
+                    position: "relative",
+                    display: "flex",
+                    alignItems: "center",
+                  }}
+                >
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      cursor: "pointer",
+                    }}
+                    onClick={(e) => setAnchorEl(e.currentTarget)}
+                  >
+                    <Avatar
+                      sx={{
+                        width: 32,
+                        height: 32,
+                        bgcolor:
+                          muiTheme.palette.mode === "dark"
+                            ? muiTheme.palette.secondary.main
+                            : muiTheme.palette.primary.main,
+                        transition: "transform 0.2s ease, box-shadow 0.2s ease",
+                        "&:hover": {
+                          transform: "scale(1.05)",
+                          boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
+                        },
+                      }}
+                    >
+                      {user?.name?.charAt(0) || "U"}
+                    </Avatar>
+                    <Box
+                      component="span"
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        ml: 0.5,
+                        color: isScrolled
+                          ? "inherit"
+                          : muiTheme.palette.common.white,
+                      }}
+                    >
+                      <svg
+                        width="12"
+                        height="12"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        style={{ marginTop: "2px" }}
+                      >
+                        <path
+                          d="M7 10l5 5 5-5"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    </Box>
+                  </Box>
+                  <Menu
+                    anchorEl={anchorEl}
+                    open={Boolean(anchorEl)}
+                    onClose={() => setAnchorEl(null)}
+                    PaperProps={{
+                      elevation: 3,
+                      sx: {
+                        minWidth: "200px",
+                        mt: 1.5,
+                        overflow: "visible",
+                        borderRadius: 1,
+                        border: "1px solid",
+                        borderColor: "divider",
+                        boxShadow:
+                          muiTheme.palette.mode === "dark"
+                            ? "0 4px 12px rgba(0,0,0,0.3)"
+                            : "0 4px 12px rgba(0,0,0,0.1)",
+                        "&:before": {
+                          content: '""',
+                          display: "block",
+                          position: "absolute",
+                          top: 0,
+                          right: 14,
+                          width: 10,
+                          height: 10,
+                          bgcolor: "background.paper",
+                          transform: "translateY(-50%) rotate(45deg)",
+                          zIndex: 0,
+                          borderLeft: "1px solid",
+                          borderTop: "1px solid",
+                          borderColor: "divider",
+                        },
+                      },
+                    }}
+                    transformOrigin={{ horizontal: "right", vertical: "top" }}
+                    anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+                  >
+                    <Box sx={{ p: 2, textAlign: "center" }}>
+                      <Avatar
+                        sx={{
+                          width: 56,
+                          height: 56,
+                          mx: "auto",
+                          mb: 1,
+                          bgcolor:
+                            muiTheme.palette.mode === "dark"
+                              ? muiTheme.palette.secondary.main
+                              : muiTheme.palette.primary.main,
+                        }}
+                      >
+                        {user?.name?.charAt(0) || "U"}
+                      </Avatar>
+                      <Typography
+                        variant="subtitle1"
+                        sx={{ fontWeight: "bold" }}
+                      >
+                        {user?.name || "User"}
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        {user?.email || ""}
+                      </Typography>
+                    </Box>
+                    <Divider />
+                    <MenuItem
+                      onClick={() => {
+                        navigate("/watchlist");
+                        setAnchorEl(null);
+                      }}
+                      sx={{ py: 1.5 }}
+                    >
+                      <BookmarkBorderIcon
+                        sx={{
+                          mr: 1.5,
+                          fontSize: "1.25rem",
+                          color:
+                            muiTheme.palette.mode === "dark"
+                              ? "secondary.main"
+                              : "primary.main",
+                        }}
+                      />
+                      My Watchlist
+                    </MenuItem>
+                    <Divider />
+                    <MenuItem
+                      onClick={() => {
+                        logout();
+                        setAnchorEl(null);
+                      }}
+                      sx={{ py: 1.5 }}
+                    >
+                      <LogoutIcon
+                        sx={{
+                          mr: 1.5,
+                          fontSize: "1.25rem",
+                          color: muiTheme.palette.error.main,
+                        }}
+                      />
+                      Logout
+                    </MenuItem>
+                  </Menu>
+                </Box>
+              </Box>
+            )}
+          </Box>
         </Toolbar>
       </Container>
     </AppBar>

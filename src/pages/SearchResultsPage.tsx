@@ -6,50 +6,57 @@ import {
   Grid,
   CircularProgress,
   Card,
-  CardMedia,
   Button,
+  IconButton,
 } from "@mui/material";
-import { useLocation } from "react-router-dom";
-import LoadMoreButton from "../components/ui/LoadMoreButton";
+import { useLocation, useNavigate } from "react-router-dom";
+import HistoryIcon from "@mui/icons-material/History";
+import DeleteIcon from "@mui/icons-material/Delete";
+import SearchIcon from "@mui/icons-material/Search";
+import LoadMoreButton from "../components/ui/common/LoadMoreButton";
 import MovieCard from "../components/ui/MovieCard";
+import MoviesCarousel from "../components/ui/common/MoviesCarousel";
 import { useMovieContext } from "../context/MovieContext";
 import { logDebug, logError } from "../utils/debug";
 import { useSearchHistory } from "../context/SearchHistoryContext";
+import type { SearchHistoryItem } from "../context/SearchHistoryContext";
+import { formatDistanceToNow } from "../utils/formatters";
 
 const SearchResultsPage: React.FC = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const query = new URLSearchParams(location.search).get("query") || "";
   const [lastSearchQuery, setLastSearchQuery] = useState<string>("");
-  const { searchMovies, searchResults, isLoading, error, resetSearch } =
-    useMovieContext();
-  const { searchHistory } = useSearchHistory();
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const {
+    searchMovies,
+    searchResults,
+    isLoading,
+    error,
+    resetSearch,
+    loadMoreSearchResults,
+    hasMoreSearchResults,
+  } = useMovieContext();
+  const { searchHistory, addToHistory } = useSearchHistory();
 
-  // One-time initialization effect
   useEffect(() => {
     logDebug("SearchResultsPage mounted");
 
     return () => {
       logDebug("SearchResultsPage unmounted");
-      // We'll do a final reset when the component is fully unmounted
-      // This is separate from the search effect's cleanup
       resetSearch();
     };
-  }, [resetSearch]); // Adding resetSearch as a dependency, but it should be stable
-
-  // Effect to handle search query changes
+  }, [resetSearch]);
   useEffect(() => {
-    // Only search if query is different from what we last searched for
     if (query !== lastSearchQuery) {
       logDebug(`SearchResultsPage: Query changed to "${query}"`);
       setLastSearchQuery(query);
 
-      // Handle empty query
       if (!query) {
         logDebug("SearchResultsPage: Empty query, no search needed");
         return;
       }
 
-      // Perform the search
       logDebug(`SearchResultsPage: Initiating search for "${query}"`);
       const searchStartTime = performance.now();
 
@@ -61,12 +68,110 @@ const SearchResultsPage: React.FC = () => {
               searchEndTime - searchStartTime
             )}ms`
           );
+
+          // Add to history with poster from first result if available
+          const posterPath =
+            searchResults.length > 0 ? searchResults[0].poster_path : null;
+          addToHistory(query, posterPath, searchResults.length);
         })
         .catch((err) => {
           logError(`SearchResultsPage: Search error`, err);
+          // Still add to history, but without a poster
+          addToHistory(query);
         });
     }
-  }, [query, lastSearchQuery, searchMovies]); // Removed resetSearch from dependencies
+  }, [query, lastSearchQuery, searchMovies, addToHistory, searchResults]);
+
+  const handleSearchHistoryClick = (searchQuery: string) => {
+    navigate(`/search?query=${encodeURIComponent(searchQuery)}`);
+  };
+  const renderHistoryItem = (item: SearchHistoryItem) => {
+    const posterUrl = item.posterPath
+      ? `https://image.tmdb.org/t/p/w500${item.posterPath}`
+      : null;
+
+    return (
+      <Box
+        onClick={() => handleSearchHistoryClick(item.query)}
+        sx={{
+          cursor: "pointer",
+          transition: "transform 0.2s",
+          "&:hover": {
+            transform: "scale(1.05)",
+          },
+        }}
+      >
+        <Box
+          sx={{
+            height: { xs: 220, sm: 240, md: 270 },
+            borderRadius: 2,
+            overflow: "hidden",
+            mb: 1,
+            backgroundImage: posterUrl ? `url(${posterUrl})` : "none",
+            backgroundColor: (theme) =>
+              theme.palette.mode === "dark"
+                ? "rgba(255, 255, 255, 0.05)"
+                : "rgba(0, 0, 0, 0.03)",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            boxShadow: "0 4px 20px rgba(0,0,0,0.2)",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            position: "relative",
+          }}
+        >
+          {!posterUrl && (
+            <SearchIcon sx={{ fontSize: 40, color: "primary.main", mb: 1 }} />
+          )}
+          <Box
+            sx={{
+              position: "absolute",
+              bottom: 0,
+              left: 0,
+              right: 0,
+              backgroundColor: "rgba(0, 0, 0, 0.7)",
+              padding: 2,
+              backdropFilter: "blur(4px)",
+            }}
+          >
+            <Typography
+              variant="body1"
+              sx={{
+                color: "white",
+                fontWeight: 500,
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+              }}
+            >
+              {item.query}
+            </Typography>
+            <Typography
+              variant="caption"
+              sx={{
+                color: "rgba(255, 255, 255, 0.7)",
+                display: "block",
+                mt: 0.5,
+              }}
+            >
+              {formatDistanceToNow(item.timestamp)}
+              {item.resultCount !== undefined &&
+                ` • ${item.resultCount} results`}
+            </Typography>
+          </Box>
+        </Box>
+      </Box>
+    );
+  };
+
+  const handleLoadMore = () => {
+    setIsLoadingMore(true);
+    loadMoreSearchResults().finally(() => {
+      setIsLoadingMore(false);
+    });
+  };
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
@@ -81,7 +186,6 @@ const SearchResultsPage: React.FC = () => {
           </Typography>
         )}
       </Box>
-      {/* Enhanced loading indicator */}
       {isLoading && (
         <Box
           sx={{
@@ -99,7 +203,6 @@ const SearchResultsPage: React.FC = () => {
           </Typography>
         </Box>
       )}
-      {/* Error message with retry button */}
       {error && (
         <Box
           sx={(theme) => ({
@@ -133,7 +236,6 @@ const SearchResultsPage: React.FC = () => {
           </Box>
         </Box>
       )}
-      {/* No results message */}
       {!isLoading && !error && searchResults.length === 0 && (
         <Box sx={{ my: 4, textAlign: "center" }}>
           <Typography variant="h6" gutterBottom>
@@ -143,131 +245,54 @@ const SearchResultsPage: React.FC = () => {
             Try different keywords or check your spelling
           </Typography>
         </Box>
-      )}{" "}
-      {/* Search results */}
+      )}
       {!isLoading && !error && searchResults.length > 0 && (
         <>
           <Grid container spacing={3}>
-            {searchResults.slice(0, 8).map((movie) => (
+            {searchResults.map((movie) => (
               <Grid item key={movie.id} xs={12} sm={6} md={4} lg={3}>
                 <MovieCard movie={movie} />
               </Grid>
             ))}
-          </Grid>{" "}
-          {searchResults.length > 8 && (
-            <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
+          </Grid>
+          {hasMoreSearchResults && (
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                mt: 4,
+              }}
+            >
               <LoadMoreButton
-                onClick={() =>
-                  (window.location.href = `/search?query=${encodeURIComponent(
-                    query
-                  )}&all=true`)
-                }
+                onClick={handleLoadMore}
                 text="Load More Results"
+                isLoading={isLoadingMore}
+                loadingText="Loading more movies..."
+                size="large"
               />
+              {isLoadingMore && (
+                <Typography sx={{ mt: 2, color: "text.secondary" }}>
+                  Loading page{" "}
+                  {searchResults.length > 0
+                    ? Math.ceil(searchResults.length / 20) + 1
+                    : 2}{" "}
+                  of results...
+                </Typography>
+              )}
             </Box>
           )}
         </>
       )}
-      {/* Last Search Section */}
       {searchHistory.length > 0 && (
         <Box sx={{ mb: 4, mt: 10 }}>
-          <Typography variant="h5" sx={{ mb: 2, fontWeight: 500 }}>
-            Your last search
-          </Typography>{" "}
-          <Box
-            sx={(theme) => ({
-              display: "flex",
-              overflowX: "auto",
-              pb: 2,
-              gap: 2,
-              "&::-webkit-scrollbar": {
-                height: "8px",
-              },
-              "&::-webkit-scrollbar-track": {
-                backgroundColor:
-                  theme.palette.mode === "light"
-                    ? "rgba(0,0,0,0.1)"
-                    : "rgba(255,255,255,0.1)",
-                borderRadius: "4px",
-              },
-              "&::-webkit-scrollbar-thumb": {
-                backgroundColor:
-                  theme.palette.mode === "light"
-                    ? "rgba(0,0,0,0.4)"
-                    : "rgba(255,255,255,0.4)",
-                borderRadius: "4px",
-              },
-            })}
-          >
-            {searchHistory.slice(0, 6).map((item, index) => (
-              <Box
-                key={index}
-                sx={{
-                  minWidth: 180,
-                  transition: "transform 0.3s",
-                  cursor: "pointer",
-                  "&:hover": {
-                    transform: "scale(1.05)",
-                  },
-                }}
-              >
-                {" "}
-                <Card
-                  onClick={() => {
-                    if (item.query) {
-                      window.location.href = `/search?query=${encodeURIComponent(
-                        item.query
-                      )}`;
-                    }
-                  }}
-                  sx={{
-                    height: "260px",
-                    width: "100%",
-                    borderRadius: "8px",
-                    overflow: "hidden",
-                    position: "relative",
-                    transition: "transform 0.2s, box-shadow 0.3s",
-                    "&:hover": {
-                      transform: "scale(1.03)",
-                      cursor: "pointer",
-                      boxShadow: `0 14px 28px rgba(0, 0, 0, 0.4)`,
-                    },
-                  }}
-                  elevation={3}
-                >
-                  {" "}
-                  <CardMedia
-                    component="img"
-                    image="https://image.tmdb.org/t/p/w500/vUUqzWa2LnHIVqkaKVlVGkVcZIW.jpg"
-                    alt={`Search for ${item.query}`}
-                    sx={{
-                      height: "100%",
-                      width: "100%",
-                      objectFit: "cover",
-                    }}
-                  />
-                  <Box
-                    sx={{
-                      position: "absolute",
-                      bottom: 0,
-                      left: 0,
-                      right: 0,
-                      padding: "8px 12px",
-                      background: "rgba(0,0,0,0.6)",
-                      backdropFilter: "blur(4px)",
-                    }}
-                  >
-                    <Typography
-                      variant="caption"
-                      sx={{ color: "white", fontWeight: "medium" }}
-                    >
-                      {item.query}
-                    </Typography>
-                  </Box>
-                </Card>
-              </Box>
-            ))}
-          </Box>
+          <MoviesCarousel
+            title="Your Previous Searches"
+            items={searchHistory}
+            renderItem={renderHistoryItem}
+            itemWidth={{ xs: "140px", sm: "160px", md: "180px", lg: "200px" }}
+            contentHeight="300px"
+          />
         </Box>
       )}
     </Container>

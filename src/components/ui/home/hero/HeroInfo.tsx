@@ -65,6 +65,7 @@ const HeroInfo: React.FC<HeroInfoProps> = ({
       }}
     >
       <Grid item xs={12}>
+        {" "}
         <Typography
           variant={isMobile ? "h3" : "h1"}
           component="h1"
@@ -81,11 +82,11 @@ const HeroInfo: React.FC<HeroInfoProps> = ({
             textTransform: "uppercase",
             fontFamily: "'Cinzel', serif",
             letterSpacing: "1px",
+            color: "#fff",
           }}
         >
           {movie.title}
         </Typography>
-
         <Box
           sx={{
             mb: 2,
@@ -94,47 +95,51 @@ const HeroInfo: React.FC<HeroInfoProps> = ({
             alignItems: "center",
           }}
         >
+          {" "}
           <Typography
             variant="body2"
             sx={{
               mr: 2,
-              color: "#ccc",
+              color: "#fff",
+              textShadow: "1px 1px 2px rgba(0,0,0,0.7)",
+              fontWeight: 500,
               fontSize: { xs: "0.8rem", md: "0.9rem" },
             }}
           >
             {new Date(movie.release_date).getFullYear()}
-          </Typography>
-
+          </Typography>{" "}
           <Chip
             label="HDR"
             size="small"
             sx={{
-              bgcolor: "rgba(255,255,255,0.2)",
+              bgcolor: "rgba(0,0,0,0.5)",
               color: "#fff",
               height: 20,
               mr: 2,
               fontSize: "0.7rem",
               borderRadius: "3px",
+              fontWeight: 500,
+              textShadow: "0px 0px 1px rgba(0,0,0,0.7)",
             }}
           />
-
           {movie.genres.slice(0, 2).map((genre) => (
             <Chip
               key={genre.id}
               label={genre.name}
               size="small"
               sx={{
-                bgcolor: "rgba(255,255,255,0.2)",
+                bgcolor: "rgba(0,0,0,0.5)",
                 color: "#fff",
                 height: 20,
                 mr: 2,
                 fontSize: "0.7rem",
                 borderRadius: "3px",
+                fontWeight: 500,
+                textShadow: "0px 0px 1px rgba(0,0,0,0.7)",
               }}
             />
           ))}
-        </Box>
-
+        </Box>{" "}
         <Typography
           variant="body2"
           sx={{
@@ -145,23 +150,27 @@ const HeroInfo: React.FC<HeroInfoProps> = ({
             WebkitBoxOrient: "vertical",
             overflow: "hidden",
             textOverflow: "ellipsis",
-            color: "#ccc",
+            color: "#fff",
+            textShadow: "1px 1px 2px rgba(0,0,0,0.7)",
+            fontWeight: 400,
+            fontSize: "1rem",
+            lineHeight: 1.6,
+            letterSpacing: "0.01em",
           }}
         >
           {movie.overview}
         </Typography>
-
         <Box sx={{ display: "flex", alignItems: "center", mt: 3 }}>
           {" "}
           <IconButton
-            sx={{
+            sx={(theme) => ({
               bgcolor: theme.palette.secondary.main,
               color: "#fff",
               mr: 2,
               "&:hover": {
                 bgcolor: theme.palette.secondary.dark,
               },
-            }}
+            })}
             onClick={onPlayClick}
             disabled={!hasTrailer}
           >
@@ -169,34 +178,46 @@ const HeroInfo: React.FC<HeroInfoProps> = ({
           </IconButton>{" "}
           <Tooltip title="Movie details">
             <IconButton
-              sx={{
-                bgcolor: "rgba(255,255,255,0.2)",
-                color: "#fff",
+              sx={(theme) => ({
+                bgcolor:
+                  theme.palette.mode === "light"
+                    ? "rgba(0,0,0,0.1)"
+                    : "rgba(255,255,255,0.2)",
+                color: theme.palette.mode === "light" ? "#333" : "#fff",
                 mr: 2,
                 "&:hover": {
-                  bgcolor: "rgba(255,255,255,0.3)",
+                  bgcolor:
+                    theme.palette.mode === "light"
+                      ? "rgba(0,0,0,0.2)"
+                      : "rgba(255,255,255,0.3)",
                 },
-              }}
+              })}
               onClick={handleDetailsClick}
             >
               <FormatListBulletedIcon />
             </IconButton>
-          </Tooltip>
+          </Tooltip>{" "}
           <Tooltip
             title={isMovieSaved ? "Remove from watchlist" : "Add to watchlist"}
           >
             <IconButton
-              sx={{
-                bgcolor: "rgba(255,255,255,0.2)",
-                color: "#fff",
+              sx={(theme) => ({
+                bgcolor:
+                  theme.palette.mode === "light"
+                    ? "rgba(0,0,0,0.1)"
+                    : "rgba(255,255,255,0.2)",
+                color: theme.palette.mode === "light" ? "#333" : "#fff",
                 mr: 2,
                 "&:hover": {
-                  bgcolor: "rgba(255,255,255,0.3)",
+                  bgcolor:
+                    theme.palette.mode === "light"
+                      ? "rgba(0,0,0,0.2)"
+                      : "rgba(255,255,255,0.3)",
                 },
-              }}
+              })}
               onClick={handleSaveClick}
             >
-              {isMovieSaved ? <BookmarkIcon color="secondary" /> : <SaveIcon />}
+              {isMovieSaved ? <BookmarkIcon color="inherit" /> : <SaveIcon />}
             </IconButton>
           </Tooltip>
         </Box>

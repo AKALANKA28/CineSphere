@@ -1,34 +1,37 @@
 import { createTheme } from '@mui/material/styles';
 import type { PaletteMode, Theme, ThemeOptions } from '@mui/material';
 
+
+
 // Create a theme instance with the specified mode
 export const createAppTheme = (mode: PaletteMode): Theme => {
   return createTheme(getDesignTokens(mode));
 };
 
 export const getDesignTokens = (mode: PaletteMode): ThemeOptions => ({
-  // Using MUI's default breakpoints for better compatibility
   palette: {
     mode,
     primary: {
-      main: mode === 'light' ? '#032541' : '#01b4e4',
-      light: mode === 'light' ? '#1c4966' : '#4fc6ea',
-      dark: mode === 'light' ? '#01192c' : '#0099c8',
-      contrastText: '#ffffff',
-    },    secondary: {
       main: mode === 'light' ? '#b2070f' : '#e52a33',
       light: mode === 'light' ? '#d4383e' : '#ff5c63',
       dark: mode === 'light' ? '#8c0000' : '#a80000',
       contrastText: '#ffffff',
-    },
+    },    
+    secondary: {
+      main: mode === 'light' ? '#b2070f' : '#e52a33',
+      light: mode === 'light' ? '#d4383e' : '#ff5c63',
+      dark: mode === 'light' ? '#8c0000' : '#a80000',
+      contrastText: '#ffffff',
+    },    
     background: {
-      default: mode === 'light' ? '#f8f8f8' : '#121212',
+      default: mode === 'light' ? '#ffffff' : '#121212',
       paper: mode === 'light' ? '#ffffff' : '#1e1e1e',
-    },
+    },    
     text: {
-      primary: mode === 'light' ? '#333333' : '#ffffff',
-      secondary: mode === 'light' ? '#5a5a5a' : '#b0b0b0',
+      primary: mode === 'light' ? '#000000' : '#ffffff',
+      secondary: mode === 'light' ? '#333333' : '#b0b0b0',
     },
+
     action: {
       active: mode === 'light' ? 'rgba(0, 0, 0, 0.54)' : 'rgba(255, 255, 255, 0.7)',
       hover: mode === 'light' ? 'rgba(0, 0, 0, 0.04)' : 'rgba(255, 255, 255, 0.08)',
@@ -120,10 +123,37 @@ export const getDesignTokens = (mode: PaletteMode): ThemeOptions => ({
       textTransform: 'none',
       fontWeight: 500,
     },
-  },  components: {
+  },  
+  components: {
     MuiContainer: {
       styleOverrides: {
         root: {
+          backgroundColor: 'transparent',
+        },
+      },
+    },
+    MuiTypography: {
+      styleOverrides: {
+        root: {
+          color: mode === 'light' ? '#000000' : 'inherit',
+        },
+        h1: {
+          color: mode === 'light' ? '#000000' : '#ffffff',
+        },
+        h2: {
+          color: mode === 'light' ? '#000000' : '#ffffff',
+        },
+        h3: {
+          color: mode === 'light' ? '#000000' : '#ffffff',
+        },
+        h4: {
+          color: mode === 'light' ? '#000000' : '#ffffff',
+        },
+        h5: {
+          color: mode === 'light' ? '#000000' : '#ffffff',
+        },
+        h6: {
+          color: mode === 'light' ? '#000000' : '#ffffff',
         },
       },
     },
@@ -139,16 +169,25 @@ export const getDesignTokens = (mode: PaletteMode): ThemeOptions => ({
             boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.25)',
           },
         },
+        text: {
+          color: mode === 'light' ? '#b2070f' : '#e52a33',
+        },
       },
-    },
+    },    
     MuiCard: {
       styleOverrides: {
         root: {
           borderRadius: 12,
           boxShadow: mode === 'light' 
-            ? '0px 2px 8px rgba(0, 0, 0, 0.1)'
+            ? '0px 2px 12px rgba(0, 0, 0, 0.15)'
             : '0px 2px 8px rgba(0, 0, 0, 0.5)',
           transition: 'all 0.3s ease-in-out',
+          '&:hover': {
+            boxShadow: mode === 'light'
+              ? '0px 4px 16px rgba(0, 0, 0, 0.2)'
+              : '0px 4px 16px rgba(0, 0, 0, 0.6)',
+            transform: 'translateY(-4px)',
+          },
         },
       },
     },
@@ -156,6 +195,7 @@ export const getDesignTokens = (mode: PaletteMode): ThemeOptions => ({
       styleOverrides: {
         root: {
           backgroundImage: 'none',
+          boxShadow: 'none'
         },
       },
     },
@@ -197,21 +237,40 @@ export const getDesignTokens = (mode: PaletteMode): ThemeOptions => ({
             borderColor: mode === 'light' ? 'rgba(0, 0, 0, 0.5)' : 'rgba(255, 255, 255, 0.5)',
           },
           '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-            borderColor: mode === 'light' ? '#032541' : '#01b4e4',
+            borderColor: mode === 'light' ? '#b2070f' : '#e52a33',
           },
         },
       },
-    },
+    },    
     MuiDivider: {
       styleOverrides: {
         root: {
           borderColor: mode === 'light' ? 'rgba(0, 0, 0, 0.12)' : 'rgba(255, 255, 255, 0.12)',
         },
       },
+    },    
+    MuiTab: {
+      styleOverrides: {
+        root: {
+          color: mode === 'light' ? 'rgba(0, 0, 0, 0.85)' : 'rgba(255, 255, 255, 0.85)',
+          '&.Mui-selected': {
+            color: mode === 'light' ? '#000000' : '#ffffff',
+            fontWeight: 500,
+          },
+        },
+      },
+    },
+    MuiTabs: {
+      styleOverrides: {
+        indicator: {
+          backgroundColor: mode === 'light' ? '#b2070f' : '#e52a33',
+          height: 3,
+        },
+      },
     },
   },
 });
 
-// Default light theme
-const theme = createAppTheme('light');
+// Default dark theme (changed from light)
+const theme = createAppTheme('dark');
 export default theme;

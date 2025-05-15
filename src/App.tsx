@@ -7,9 +7,8 @@ import { WatchlistProvider } from "./context/WatchlistContext";
 import { AuthProvider } from "./context/AuthContext";
 import { SearchHistoryProvider } from "./context/SearchHistoryContext";
 import { useTheme } from "./context/ThemeContext";
-import { createAppTheme } from "./styles/theme";
+import { createAppTheme } from "./components/styles/theme";
 import MainLayout from "./components/layout/MainLayout";
-import ProfileWrapper from "./pages/ProfileWrapper";
 
 // Pages
 import HomePage from "./pages/HomePage";
@@ -18,8 +17,9 @@ import MoviesListPage from "./pages/MoviesListPage";
 import MovieDetailsPage from "./pages/MovieDetailsPage";
 import SearchResultsPage from "./pages/SearchResultsPage";
 import TrendingPage from "./pages/TrendingPage";
-import LoginPage from "./pages/LoginPage";
-import RegisterPage from "./pages/RegisterPage";
+import LoginPage from "./pages/auth/LoginPage";
+import RegisterPage from "./pages/auth/RegisterPage";
+import WatchlistPage from "./pages/WatchlistPage";
 import NotFoundPage from "./pages/NotFoundPage";
 
 // Wrapper component that uses the theme context
@@ -58,7 +58,7 @@ const AppWithTheme = () => {
                     <Route path="/trending" element={<TrendingPage />} />
                     <Route path="/login" element={<LoginPage />} />
                     <Route path="/register" element={<RegisterPage />} />
-                    <Route path="/profile" element={<ProfileWrapper />} />
+                    <Route path="/watchlist" element={<WatchlistPage />} />
                     <Route path="*" element={<NotFoundPage />} />
                   </Routes>
                 </MainLayout>

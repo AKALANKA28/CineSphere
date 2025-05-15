@@ -24,12 +24,11 @@ const HeroBox = styled(Box)(({ theme }) => ({
   backgroundSize: "cover",
   backgroundPosition: "center",
   backgroundRepeat: "no-repeat",
-  color: "#fff",
+  color: theme.palette.mode === "light" ? "#333" : "#fff",
   display: "flex",
   alignItems: "center",
   transition: "background-image 1s ease-in-out",
   marginTop: 0, // Remove negative margin
-
   "&::before": {
     content: '""',
     position: "absolute",
@@ -39,8 +38,8 @@ const HeroBox = styled(Box)(({ theme }) => ({
     bottom: 0,
     background:
       theme.palette.mode === "light"
-        ? "linear-gradient(0deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 50%, rgba(0,0,0,0.2) 100%)"
-        : "linear-gradient(0deg, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.6) 50%, rgba(0,0,0,0.3) 100%)",
+        ? "linear-gradient(0deg, rgb(255, 255, 255) 0%, rgba(255, 255, 255, 0.6) 20%, rgba(255, 255, 255, 0.4) 50%, rgba(255, 255, 255, 0) 100%)"
+        : "linear-gradient(0deg, #121212 0%, #000000 10%, rgba(0,0,0,0.6) 50%, rgba(0,0,0,0.3) 100%)",
     zIndex: 1,
   },
 }));

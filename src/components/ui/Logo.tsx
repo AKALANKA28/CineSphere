@@ -1,6 +1,8 @@
 import React from "react";
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, useTheme } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import MovieFilterIcon from "@mui/icons-material/MovieFilter";
+import LocalMoviesIcon from "@mui/icons-material/LocalMovies";
 
 interface LogoProps {
   onClick?: () => void;
@@ -9,6 +11,7 @@ interface LogoProps {
 
 const Logo: React.FC<LogoProps> = ({ onClick, variant = "default" }) => {
   const navigate = useNavigate();
+  const theme = useTheme();
 
   const handleClick = () => {
     if (onClick) {
@@ -29,20 +32,45 @@ const Logo: React.FC<LogoProps> = ({ onClick, variant = "default" }) => {
     >
       <Box
         sx={{
-          width: variant === "compact" ? 30 : 36,
-          height: variant === "compact" ? 30 : 36,
-          borderRadius: "50%",
-          bgcolor: "#3b82f6",
+          position: "relative",
+          width: variant === "compact" ? 35 : 42,
+          height: variant === "compact" ? 35 : 42,
+          background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
+          borderRadius: "12px",
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          fontWeight: "bold",
-          mr: 1,
-          color: "#ffffff",
+          boxShadow: `0 4px 10px ${
+            theme.palette.mode === "light"
+              ? "rgba(178, 7, 15, 0.3)"
+              : "rgba(229, 42, 51, 0.3)"
+          }`,
+          mr: 1.5,
+          transform: "rotate(-5deg)",
+          transition: "transform 0.3s ease",
+          "&:hover": {
+            transform: "rotate(0deg)",
+          },
         }}
       >
-        M
-      </Box>
+        <LocalMoviesIcon
+          sx={{
+            fontSize: variant === "compact" ? 18 : 24,
+            color: "#ffffff",
+            position: "absolute",
+            zIndex: 2,
+          }}
+        />
+        <MovieFilterIcon
+          sx={{
+            fontSize: variant === "compact" ? 22 : 28,
+            color: "rgba(255, 255, 255, 0.4)",
+            position: "absolute",
+            transform: "rotate(45deg)",
+            zIndex: 1,
+          }}
+        />
+      </Box>{" "}
       {variant === "default" && (
         <>
           <Typography
@@ -51,11 +79,14 @@ const Logo: React.FC<LogoProps> = ({ onClick, variant = "default" }) => {
             component="div"
             sx={{
               fontWeight: 700,
+              background: `linear-gradient(135deg, ${theme.palette.primary.light} 0%, ${theme.palette.primary.main} 100%)`,
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              letterSpacing: "0.5px",
             }}
           >
-            ovie Explorer
+            CineSphere
           </Typography>
-         
         </>
       )}
     </Box>

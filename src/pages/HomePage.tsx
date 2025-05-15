@@ -5,9 +5,11 @@ import HomeContent from "../components/ui/home/HomeContent";
 
 const HomePage: React.FC = () => {
   return (
-    <Box>
+    <Box sx={{ position: "relative" }}>
       <HeroSection />
-      <HomeContent />
+      <Box sx={{ position: "relative", mt: -2, zIndex: 2 }}>
+        <HomeContent />
+      </Box>
     </Box>
   );
 };

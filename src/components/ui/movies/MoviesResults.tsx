@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import type { Movie } from "../../../types/movie.types";
 import MovieCard from "../MovieCard";
-import LoadMoreButton from "../LoadMoreButton";
+import LoadMoreButton from "../common/LoadMoreButton";
 
 interface MoviesResultsProps {
   movies: Movie[];

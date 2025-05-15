@@ -1,10 +1,10 @@
 import React from "react";
 import { Container, Box } from "@mui/material";
-import MovieSection from "./MovieSection";
+import MovieSection from "../common/MovieSection";
 
 const HomeContent: React.FC = () => {
   return (
-    <Container maxWidth="xl" sx={{ py: 4 }}>
+    <Container maxWidth="xl" sx={{ py: 4, bgcolor: "background.default" }}>
       <Box sx={{ mb: 6 }}>
         <MovieSection
           title="Popular Movies"

@@ -80,41 +80,183 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   };
 
   const drawerContent = (
-    <Box sx={{ width: 250, p: 2 }}>
-      <Box sx={{ my: 2 }}>
-        <Logo />
+    <Box sx={{ width: 280, p: 2 }}>
+      <Box sx={{ my: 2, display: "flex", justifyContent: "center" }}>
+        <Box sx={{ fontSize: "1.5rem", fontWeight: "bold" }}>
+          Movie Explorer
+        </Box>
       </Box>
-      <Divider />
-      <List>
-        <ListItem button onClick={() => navigateTo("/")}>
-          <ListItemText primary="Home" />
+      <Divider sx={{ mb: 2 }} />
+      <List sx={{ py: 1 }}>
+        <ListItem
+          button
+          onClick={() => navigateTo("/")}
+          sx={{
+            borderRadius: "8px",
+            mb: 1.5,
+            py: 1.2,
+            "&:hover": {
+              bgcolor: (theme) => alpha(theme.palette.primary.main, 0.1),
+            },
+          }}
+        >
+          <ListItemText
+            primary="Home"
+            primaryTypographyProps={{
+              fontSize: "1rem",
+              fontWeight: 500,
+            }}
+          />
         </ListItem>
-        <ListItem button onClick={() => navigateTo("/movies")}>
-          <ListItemText primary="Browse Movies" />
+        <ListItem
+          button
+          onClick={() => navigateTo("/movies")}
+          sx={{
+            borderRadius: "8px",
+            mb: 1.5,
+            py: 1.2,
+            "&:hover": {
+              bgcolor: (theme) => alpha(theme.palette.primary.main, 0.1),
+            },
+          }}
+        >
+          <ListItemText
+            primary="Browse Movies"
+            primaryTypographyProps={{
+              fontSize: "1rem",
+              fontWeight: 500,
+            }}
+          />
         </ListItem>
-        <ListItem button onClick={() => navigateTo("/trending")}>
-          <ListItemText primary="Trending" />
-        </ListItem>
-
+        <ListItem
+          button
+          onClick={() => navigateTo("/trending")}
+          sx={{
+            borderRadius: "8px",
+            mb: 1.5,
+            py: 1.2,
+            "&:hover": {
+              bgcolor: (theme) => alpha(theme.palette.primary.main, 0.1),
+            },
+          }}
+        >
+          <ListItemText
+            primary="Trending"
+            primaryTypographyProps={{
+              fontSize: "1rem",
+              fontWeight: 500,
+            }}
+          />
+        </ListItem>{" "}
         {isAuthenticated ? (
           <>
-            <ListItem button onClick={() => navigateTo("/profile")}>
-              <ListItemText primary="My Profile" />
+            <ListItem
+              button
+              onClick={() => navigateTo("/profile")}
+              sx={{
+                borderRadius: "8px",
+                mb: 1.5,
+                py: 1.2,
+                "&:hover": {
+                  bgcolor: (theme) => alpha(theme.palette.primary.main, 0.1),
+                },
+              }}
+            >
+              <ListItemText
+                primary="My Profile"
+                primaryTypographyProps={{
+                  fontSize: "1rem",
+                  fontWeight: 500,
+                }}
+              />
             </ListItem>
-            <ListItem button onClick={logout}>
+            <ListItem
+              button
+              onClick={() => navigateTo("/watchlist")}
+              sx={{
+                borderRadius: "8px",
+                mb: 1.5,
+                py: 1.2,
+                "&:hover": {
+                  bgcolor: (theme) => alpha(theme.palette.primary.main, 0.1),
+                },
+              }}
+            >
+              <ListItemText
+                primary="My Watchlist"
+                primaryTypographyProps={{
+                  fontSize: "1rem",
+                  fontWeight: 500,
+                }}
+              />
+            </ListItem>
+            <ListItem
+              button
+              onClick={logout}
+              sx={{
+                borderRadius: "8px",
+                mb: 1.5,
+                py: 1.2,
+                px: 2,
+                bgcolor: (theme) => alpha(theme.palette.error.main, 0.12),
+                "&:hover": {
+                  bgcolor: (theme) => alpha(theme.palette.error.main, 0.25),
+                },
+              }}
+            >
               <ListItemText
                 primary="Logout"
-                primaryTypographyProps={{ color: "error" }}
+                primaryTypographyProps={{
+                  color: "error",
+                  fontWeight: 600,
+                  fontSize: "0.95rem",
+                }}
               />
             </ListItem>
           </>
         ) : (
           <>
-            <ListItem button onClick={() => openAuthDialog("login")}>
-              <ListItemText primary="Log in" />
+            <ListItem
+              button
+              onClick={() => openAuthDialog("login")}
+              sx={{
+                borderRadius: "8px",
+                mb: 1.5,
+                py: 1.2,
+                bgcolor: (theme) => alpha(theme.palette.primary.main, 0.1),
+                "&:hover": {
+                  bgcolor: (theme) => alpha(theme.palette.primary.main, 0.2),
+                },
+              }}
+            >
+              <ListItemText
+                primary="Log in"
+                primaryTypographyProps={{
+                  fontSize: "1rem",
+                  fontWeight: 500,
+                }}
+              />
             </ListItem>
-            <ListItem button onClick={() => openAuthDialog("register")}>
-              <ListItemText primary="Register" />
+            <ListItem
+              button
+              onClick={() => openAuthDialog("register")}
+              sx={{
+                borderRadius: "8px",
+                mb: 1.5,
+                py: 1.2,
+                bgcolor: (theme) => alpha(theme.palette.secondary.main, 0.1),
+                "&:hover": {
+                  bgcolor: (theme) => alpha(theme.palette.secondary.main, 0.2),
+                },
+              }}
+            >
+              <ListItemText
+                primary="Register"
+                primaryTypographyProps={{
+                  fontSize: "1rem",
+                  fontWeight: 500,
+                }}
+              />
             </ListItem>
           </>
         )}
@@ -130,7 +272,15 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
           }}
           style={{ width: "100%" }}
         >
-          <Search sx={{ width: "100%", my: 1 }}>
+          <Search
+            sx={{
+              width: "100%",
+              my: 1,
+              borderRadius: "8px",
+              overflow: "hidden",
+              boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+            }}
+          >
             <SearchIconWrapper>
               <SearchIcon />
             </SearchIconWrapper>
@@ -140,8 +290,9 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                 border: "none",
                 background: "transparent",
                 color: "inherit",
-                padding: "8px 8px 8px 40px",
+                padding: "10px 10px 10px 40px",
                 outline: "none",
+                fontSize: "16px", // More touch-friendly size
               }}
               placeholder="Search movies…"
               value={searchQuery}
@@ -158,7 +309,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
         handleDrawerToggle={handleDrawerToggle}
-      />
+      />{" "}
       <Drawer
         anchor="left"
         open={drawerOpen}
@@ -166,9 +317,18 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
         ModalProps={{
           keepMounted: true,
         }}
+        PaperProps={{
+          sx: {
+            borderRadius: "0 16px 16px 0",
+            boxShadow: "0 4px 20px rgba(0,0,0,0.2)",
+            width: { xs: "85%", sm: 320 },
+            padding: "0",
+            overflowX: "hidden",
+          },
+        }}
       >
         {drawerContent}
-      </Drawer>{" "}
+      </Drawer>
       <Box
         component="main"
         sx={{
@@ -179,7 +339,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
         }}
       >
         {children}
-      </Box>{" "}
+      </Box>
       <Footer />
       {/* Auth Dialog */}
       <AuthDialog

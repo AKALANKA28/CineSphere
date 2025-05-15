@@ -188,42 +188,44 @@ const MovieDetailsPage: React.FC = () => {
       />
     );
   }
-
   return (
-    <Box sx={{ bgcolor: "black", color: "white", minHeight: "100vh" }}>
+    <Box
+      sx={{
+        bgcolor: "background.default",
+        color: "text.primary",
+        minHeight: "100vh",
+      }}
+    >
       {showTrailer && trailerKey && (
         <TrailerPlayer trailerKey={trailerKey} onClose={handleCloseTrailer} />
       )}
       {!showTrailer && (
-        <MovieHero movie={movie} onPlayTrailer={handlePlayTrailer}>
-          <MovieTabs
-            movie={movie}
-            activeTab={activeTab}
-            handleTabChange={handleTabChange}
-            cast={cast}
-            relatedMovies={relatedMovies}
-            castPage={castPage}
-            relatedPage={relatedPage}
-            castItemsPerPage={castItemsPerPage}
-            moviesItemsPerPage={moviesItemsPerPage}
-            handleCastPrev={handleCastPrev}
-            handleCastNext={handleCastNext}
-            handleRelatedPrev={handleRelatedPrev}
-            handleRelatedNext={handleRelatedNext}
-            navigateToMovie={navigateToMovie}
-          />
-        </MovieHero>
-      )}
-
-      {!showTrailer && (
-        <RecommendationSection
-          recommendedMovies={recommendedMovies}
-          recommendedPage={recommendedPage}
-          moviesItemsPerPage={moviesItemsPerPage}
-          handleRecommendedPrev={handleRecommendedPrev}
-          handleRecommendedNext={handleRecommendedNext}
-          navigateToMovie={navigateToMovie}
-        />
+        <Box sx={{ position: "relative" }}>
+          <MovieHero movie={movie} onPlayTrailer={handlePlayTrailer}>
+            <MovieTabs
+              movie={movie}
+              activeTab={activeTab}
+              handleTabChange={handleTabChange}
+              cast={cast}
+              relatedMovies={relatedMovies}
+              castPage={castPage}
+              relatedPage={relatedPage}
+              castItemsPerPage={castItemsPerPage}
+              moviesItemsPerPage={moviesItemsPerPage}
+              handleCastPrev={handleCastPrev}
+              handleCastNext={handleCastNext}
+              handleRelatedPrev={handleRelatedPrev}
+              handleRelatedNext={handleRelatedNext}
+              navigateToMovie={navigateToMovie}
+            />
+          </MovieHero>
+          <Box sx={{ position: "relative", mt: -2, zIndex: 2 }}>
+            <RecommendationSection
+              recommendedMovies={recommendedMovies}
+              navigateToMovie={navigateToMovie}
+            />
+          </Box>
+        </Box>
       )}
     </Box>
   );

@@ -44,32 +44,36 @@ const MovieTabs: React.FC<MovieTabsProps> = ({
 }) => {
   return (
     <Box sx={{ width: "100%", mb: 4 }}>
+      {" "}
       <Tabs
         value={activeTab}
         onChange={handleTabChange}
         textColor="inherit"
-        sx={{
+        sx={(theme) => ({
           mb: 3,
           borderBottom: 1,
           borderColor: "divider",
           "& .MuiTabs-indicator": {
             backgroundColor: "primary.main",
+            height: 3,
           },
           "& .MuiTab-root": {
-            color: "rgba(255,255,255,0.7)",
+            color:
+              theme.palette.mode === "light"
+                ? "rgba(0,0,0,0.85)"
+                : "rgba(255,255,255,0.7)",
             "&.Mui-selected": {
-              color: "white",
+              color: theme.palette.mode === "light" ? "#000" : "#fff",
+              fontWeight: 500,
             },
           },
-        }}
+        })}
       >
         <Tab label="Storyline & Details" value="storyline" />
         <Tab label="Cast" value="cast" />
         <Tab label="Sequels & Prequels" value="related" />
       </Tabs>
-
       {activeTab === "storyline" && <StorylineTab movie={movie} />}
-
       {activeTab === "cast" && (
         <CastTab
           cast={cast}
@@ -79,7 +83,6 @@ const MovieTabs: React.FC<MovieTabsProps> = ({
           handleCastNext={handleCastNext}
         />
       )}
-
       {activeTab === "related" && (
         <RelatedTab
           relatedMovies={relatedMovies}

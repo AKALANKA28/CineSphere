@@ -8,19 +8,17 @@ import {
   Alert,
   AlertTitle,
   CircularProgress,
-  Button,
 } from "@mui/material";
-import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { getMoviesByEndpoint } from "../api/movieApi";
 import type { Movie } from "../types/movie.types";
 import MovieCard from "../components/ui/MovieCard";
+import LoadMoreButton from "../components/ui/common/LoadMoreButton";
 
 // Map of endpoints to page titles
 const categoryTitles: Record<string, string> = {
   popular: "Popular Movies",
   top_rated: "Top Rated Movies",
   upcoming: "Upcoming Movies",
-  now_playing: "Now Playing Movies",
 };
 
 const MoviesListPage: React.FC = () => {
@@ -112,29 +110,18 @@ const MoviesListPage: React.FC = () => {
                   <MovieCard movie={movie} />
                 </Grid>
               ))}
-            </Grid>
-
+            </Grid>{" "}
             {moviesToShow.length < movies.length && (
               <Box
                 sx={{ display: "flex", justifyContent: "center", mt: 5, mb: 3 }}
               >
-                <Button
-                  variant="contained"
-                  color="primary"
-                  size="large"
-                  disabled={isLoadingMore}
+                <LoadMoreButton
                   onClick={handleLoadMore}
-                  startIcon={
-                    isLoadingMore ? (
-                      <CircularProgress size={20} color="inherit" />
-                    ) : (
-                      <MoreHorizIcon />
-                    )
-                  }
-                  sx={{ px: 4, py: 1.2 }}
-                >
-                  {isLoadingMore ? "Loading..." : "Load More Movies"}
-                </Button>
+                  isLoading={isLoadingMore}
+                  text="Load More Movies"
+                  loadingText="Loading..."
+                  size="large"
+                />
               </Box>
             )}
           </>
