@@ -2,7 +2,7 @@
 
 A modern React application for exploring movies built with Material-UI, TypeScript, React Router, and Axios. This application provides a beautiful interface for discovering movies, searching for favorites, and managing a personal watchlist.
 
-[Movie Explorer](https://cine-sphere-h3z0tvo9r-akalanka28s-projects.vercel.app/)
+[Movie Explorer](https://cine-sphere-git-main-akalanka28s-projects.vercel.app)
 
 ## Features
 
